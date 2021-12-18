@@ -73,6 +73,12 @@ meta:
 	make -C  ../../meta clean
 	make -C  ../../meta
 	make -C  ../../meta rpc
+ifeq ("$(SAI_NATIVE_HEADER)", "true")
+	@echo "COPY SAI native header to $(SAI_HEADER_DIR)"
+	sudo cp ../../inc/* $(SAI_HEADER_DIR)
+else
+	@echo "Use SDK headers at $(SAI_HEADER_DIR)"
+endif 
 
 $(CPP_SOURCES): $(METADIR)sai.thrift
 	$(THRIFT) -o ./ --gen cpp -r $^
