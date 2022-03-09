@@ -74,6 +74,22 @@ def sai_thrift_object_type_get_availability(client,
     return availability_cnt
 
 
+def sai_thrift_api_uninitialize(client):
+    """
+    sai_thrift_api_uninitialize() RPC client function
+    implementation
+
+    Args:
+        client (Client): SAI RPC client
+
+    Returns:
+        uint: object type
+    """
+    obj_type = client.sai_thrift_api_uninitialize()
+
+    return obj_type
+
+
 def sai_thrift_get_debug_counter_port_stats(client, port_oid, counter_ids):
     """
     Get port statistics for given debug counters
