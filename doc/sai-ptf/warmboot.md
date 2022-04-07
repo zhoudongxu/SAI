@@ -23,6 +23,7 @@ Testbed structure as below.
 
 ### Test Topology
 For SAI-PTF, it will use a non-topology network structure for the sai testing. 
+
 ![Device_topology](img/SAI_PTF_Topology.jpg)
 ### Testbed
 Those tests will be run on the testbed structure as below, the components are:
