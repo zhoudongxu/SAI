@@ -34,6 +34,7 @@ Those tests will be run on the testbed structure as below, the components are:
 ### Test Structure
 ---
 ![Components](img/Component_topology.jpg)
+
 Test structure in the chart above, components are:
 * PTF container - run test cases, and use an RPC client to invoke the SAI interfaces on DUT
 * SAI Server container - run inside DUT/switch, which exposes the SAI SDK APIs from the libsai
