@@ -222,39 +222,39 @@ The code for making the warm shutdown is
 
 ## Example of re-organizing the case into a warm reboot
 ### Context
-For warmboot test cases, we can always make it by two ways:
-1. Reuse the test logic in exixting code, in this way we need to:
-     - wrap the the code in the existing method for warmboot usage, and
-     - place the new method in warmboot method
-2. Write a brand new warmboot testcases
+For warm reboot test cases, we can always make it in two ways:
+1. Reuse the test logic in existing code, in this way we need to:
+     - wrap the code in the existing method for warm reboot usage, and
+     - place the new method in the warm reboot method
+2. Write a brand new warm reboot test cases
 
 In order to reuse the existing test cases in a warm reboot, we need to re-organize the existing test cases into the warm reboot structure.
 
 ### Test case detail
-There is test sample for warm reboot test https://github.com/opencomputeproject/SAI/pull/1440
+There is a test sample for the warm reboot test https://github.com/opencomputeproject/SAI/pull/1440
 
 
-For this warmboot test in sample, we reuse the code in the [L2SanityTest](https://github.com/richardyu-ms/SAI/blob/v1.7/ptf/saisanity.py). In general, in this test case, we 
+For this warm reboot test in the sample, we reuse the code in the [L2SanityTest](https://github.com/richardyu-ms/SAI/blob/v1.7/ptf/saisanity.py). In general, in this test case, we 
 - Setup
   1. create Vlans for each port
-  2. create mac for port (mapped with index)
-  3. then create route rules by add mac and port
-  4. then send packet to on port by with different mac
+  2. create MACs for ports (mapped with index)
+  3. then create route rules by adding mac and port
+  4. then send packets to on port by with different mac
 - Check
 
-  5. check we can get the port which allocated with the mac as route rules
+  5. check we can get the port allocated with the mac as route rules
 
-With those basic vlan and fdb functionality, we expect in warmboot scenario, we can get the test case and expections as below
-1. pre-warmboot
-    - Setup as test in L2SanityTest
-    - Check as test in L2SanityTest
+With that basic VLAN and FDB functionality, we expect in a warm reboot scenario, we can get the test case and expectations below
+1. pre-warmreboot
+    - Setup as a test in L2SanityTest
+    - Check as a test in L2SanityTest
 2. Starting
-    - Check as test in L2SanityTest
+    - Check as a test in L2SanityTest
 
-*In this stage, as switch running in starting mode, sai swtich is not getting started, we will only verify the packet transit*
+*In this stage, like a switch running in starting mode, sai switch is not getting started, we will only verify the packet transit*
     
-3. Post-warmboot
-    - APIs start switch in warm mode
-    - Check as test in L2SanityTest
+3. Post-warmreboot
+    - APIs start the switch in warm mode
+    - Check as a test in L2SanityTest
 
-*In this stage, switch gets started, and we can use warmboot api to start the switch.*
+*In this stage, the switch gets started, and we can use warm reboot API to start the switch.*
