@@ -221,6 +221,40 @@ The code for making the warm shutdown is
 
 
 ## Example of re-organizing the case into a warm reboot
+### Context
+For warmboot test cases, we can always make it by two ways:
+1. Reuse the test logic in exixting code, in this way we need to:
+     - wrap the the code in the existing method for warmboot usage, and
+     - place the new method in warmboot method
+2. Write a brand new warmboot testcases
+
 In order to reuse the existing test cases in a warm reboot, we need to re-organize the existing test cases into the warm reboot structure.
 
-There is a sample for re-organizing the test https://github.com/opencomputeproject/SAI/pull/1440
+### Test case detail
+There is test sample for warm reboot test https://github.com/opencomputeproject/SAI/pull/1440
+
+
+For this warmboot test in sample, we reuse the code in the [L2SanityTest](https://github.com/richardyu-ms/SAI/blob/v1.7/ptf/saisanity.py). In general, in this test case, we 
+- Setup
+  1. create Vlans for each port
+  2. create mac for port (mapped with index)
+  3. then create route rules by add mac and port
+  4. then send packet to on port by with different mac
+- Check
+
+  5. check we can get the port which allocated with the mac as route rules
+
+With those basic vlan and fdb functionality, we expect in warmboot scenario, we can get the test case and expections as below
+1. pre-warmboot
+    - Setup as test in L2SanityTest
+    - Check as test in L2SanityTest
+2. Starting
+    - Check as test in L2SanityTest
+
+*In this stage, as switch running in starting mode, sai swtich is not getting started, we will only verify the packet transit*
+    
+3. Post-warmboot
+    - APIs start switch in warm mode
+    - Check as test in L2SanityTest
+
+*In this stage, switch gets started, and we can use warmboot api to start the switch.*
