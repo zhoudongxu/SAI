@@ -41,9 +41,9 @@ import sai_thrift.sai_adapter as adapter
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
 
-PLATFORM = os.environ.get('PLATFORM', 'common')
+PLATFORM = os.environ.get('PLATFORM', 'brcm')
 platform_map = {'broadcom':'brcm', 'barefoot':'bfn', 'mellanox':'mlnx'}
-ROLE_CONFIG = os.environ.get('ROLE_CONFIG', None)
+ROLE_CONFIG = os.environ.get('ROLE_CONFIG', 't0')
 
 class ThriftInterface(BaseTest):
     """
@@ -1218,8 +1218,6 @@ from platform_helper.brcm_sai_helper import * # pylint: disable=wildcard-import;
 from platform_helper.mlnx_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from platform_helper.brcm_t0_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
-import pdb
-
 class PlatformSaiHelper(SaiHelper):
     """
     Class uses to extend from SaiHelper, base on the [platform] class attribute,
@@ -1264,7 +1262,6 @@ class PlatformSaiHelper(SaiHelper):
             if len(target_classes) == 0:
                 raise ValueError("None extend platform class!")
             target_base_class = list(target_classes)[0]
-            pdb.set_trace()
         else:
             target_base_class = sai_helper_subclass_map[pl]
             

@@ -22,12 +22,37 @@ This file contains class for brcm specified functions.
 
 from platform_helper.common_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
+import pdb
 class BrcmT0SaiHelper(CommonSaiHelper):
     """
     This class contains broadcom(brcm) specified functions for the platform setup and test context configuration.
     """
+
     platform = 'brcm'
     role_config = 't0'
 
     def normal_setup(self):
         print("BrcmT0SaiHelper::normal_setup")
+        self.start_switch()
+        self.config_meta_port()
+
+
+    def config_meta_port(self):
+        attr = sai_thrift_get_switch_attribute(self.client, default_virtual_router_id=True)
+        self.default_vrf = attr['default_virtual_router_id']
+        self.assertNotEqual(self.default_vrf, 0)
+        pdb.set_trace()
+
+
+    def start_switch(self):
+        """
+        Start switch and wait seconds for a warm up.
+        """
+        switch_init_wait = 5
+
+        self.switch_id = sai_thrift_create_switch(
+            self.client, init_switch=True, src_mac_address=ROUTER_MAC)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+        print("Waiting for switch to get ready, {} seconds ...".format(switch_init_wait))
+        time.sleep(switch_init_wait)
