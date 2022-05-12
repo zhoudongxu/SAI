@@ -162,9 +162,11 @@ class BrcmT0SaiHelper(CommonSaiHelper):
                 self.client, port_oid=port, mtu=PORT_MTU, admin_state=True)
         
         print("Recreate Port serdes...")
-        for i, port in enumerate(self.port_list):
-            sai_thrift_set_port_attribute(
-                self.client, port_oid=port, mtu=PORT_MTU, admin_state=True)
+        #for i, port in enumerate(self.port_list):
+            #serdes = sai_thrift_get_port_attribute(self.client, port_serdes_id=True)
+            #sai_thrift_remove_port_serdes(self.client, serdes)
+            #sai_thrift_create_port_serdes(
+            #    self.client, port_oid=port, mtu=PORT_MTU, admin_state=True)
 
 
     def start_switch(self):
