@@ -38,7 +38,7 @@ from sai_thrift import sai_rpc
 from sai_utils import *
 import sai_thrift.sai_adapter as adapter
 
-ROUTER_MAC = '00:77:66:55:44:00'
+ROUTER_MAC = 'F4:8E:38:16:BC:75'
 THRIFT_PORT = 9092
 
 PLATFORM = os.environ.get('PLATFORM', 'brcm')
@@ -317,8 +317,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         self.switch_id = sai_thrift_create_switch(
             self.client, 
-            init_switch=True, 
-            src_mac_address=ROUTER_MAC)
+            init_switch=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
 
@@ -519,8 +518,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         # add new ports from port config file
         self.ports_config = self.parsePortConfig(
             self.test_params['port_config_ini'])
-        for name, port in self.ports_config.items():
-            print("Creating port: %s" % name)
+        for index, port in self.ports_config.items():
+            print("Creating port: %s" % self.ports_config[index])
             fec_mode = fec_str_to_int(port.get('fec', None))
             auto_neg_mode = True if port.get(
                 'autoneg', "").lower() == "on" else False
@@ -564,6 +563,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         ports = OrderedDict()
         try:
+            index = 0
             with open(port_config_file) as conf:
                 for line in conf:
                     if line.startswith('#'):
@@ -573,6 +573,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                     tokens = line.split()
                     if len(tokens) < 2:
                         continue
+                    
                     name_index = titles.index('name')
                     name = tokens[name_index]
                     data = {}
@@ -583,7 +584,9 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                     data['lanes'] = [int(lane)
                                      for lane in data['lanes'].split(',')]
                     data['speed'] = int(data['speed'])
-                    ports[name] = data
+                    data['name'] = name
+                    ports[index] = data
+                    index = index + 1
             return ports
         except Exception as e:
             raise e
