@@ -19,6 +19,7 @@ additional useful functions.
 Tests will usually inherit from one of the base classes to have the controller
 and/or dataplane automatically set up.
 """
+
 import os
 import time
 from threading import Thread
@@ -39,9 +40,10 @@ import sai_thrift.sai_adapter as adapter
 
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
-
-PLATFORM = os.environ.get('PLATFORM')
+#Todo reset the defaul config
+PLATFORM = os.environ.get('PLATFORM', 'brcm')
 platform_map = {'broadcom':'brcm', 'barefoot':'bfn', 'mellanox':'mlnx'}
+ROLE_CONFIG = os.environ.get('ROLE_CONFIG', 't0')
 
 class ThriftInterface(BaseTest):
     """
@@ -1199,13 +1201,27 @@ def get_platform():
         pl = platform_map[pl_low]
     elif pl_low in platform_map.values():
         pl = pl_low
+    
+    print("Platform type is: {}".format(pl))
     return pl
+
+def get_role_config():
+    """
+    Get Role config tag.
+
+    This name defined as a class parameters, base on this tag, this framework will select the test class as the base test class.
+    """
+    if not ROLE_CONFIG:
+        return None
+    rc_low = ROLE_CONFIG.lower()
+    return rc_low
 
 
 from platform_helper.common_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from platform_helper.bfn_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from platform_helper.brcm_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from platform_helper.mlnx_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from platform_helper.brcm_t0_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 class PlatformSaiHelper(SaiHelper):
     """
@@ -1213,16 +1229,53 @@ class PlatformSaiHelper(SaiHelper):
     dynamic select a subclass from the platform_helper.
     """
     def __new__(cls, *args, **kwargs):
+
         sai_helper_subclass_map = {subclass.platform: subclass for subclass in SaiHelper.__subclasses__()}
-        common_sai_helper_subclass_map = {subclass.platform: subclass for subclass in CommonSaiHelper.__subclasses__()}
+        common_sai_helper_subclass_map = {}
+        common_sai_role_config_helper_subclass_map = {}
+        for subclass in CommonSaiHelper.__subclasses__():
+            if not subclass.platform in common_sai_helper_subclass_map:
+                common_sai_helper_subclass_map[subclass.platform] = []            
+            if 'platform_helper' in str(subclass):
+                common_sai_helper_subclass_map[subclass.platform].append(subclass)
+            if hasattr(subclass, 'role_config'):
+                if not subclass.role_config in common_sai_role_config_helper_subclass_map:
+                    common_sai_role_config_helper_subclass_map[subclass.role_config] = []            
+                if 'platform_helper' in str(subclass):
+                    common_sai_role_config_helper_subclass_map[subclass.role_config].append(subclass)
+            else:
+                if not 'none' in common_sai_role_config_helper_subclass_map:
+                    common_sai_role_config_helper_subclass_map['none'] = []            
+                if 'platform_helper' in str(subclass):
+                    common_sai_role_config_helper_subclass_map['none'].append(subclass)
+
+        #common_sai_helper_subclass_map = {subclass.platform: subclass for subclass in CommonSaiHelper.__subclasses__()}
+        non_role_config_sai_helper_subclass_map = {subclass.platform: subclass for subclass in CommonSaiHelper.__subclasses__()}
         pl = get_platform()
+        rc = get_role_config()
 
         if pl in common_sai_helper_subclass_map:
-            target_base_class = common_sai_helper_subclass_map[pl]
+            target_pl_base_classes = common_sai_helper_subclass_map[pl]
+            if rc and rc in common_sai_role_config_helper_subclass_map:
+                target_base_rc_class = common_sai_role_config_helper_subclass_map[rc]                
+            else:
+                target_base_rc_class = common_sai_role_config_helper_subclass_map['none']
+            target_classes =  set(target_pl_base_classes).intersection(set(target_base_rc_class))
+            
+            if len(target_classes) > 1:
+                raise ValueError("Extend platform class more than one!")
+            if len(target_classes) == 0:
+                raise ValueError("None extend platform class!")
+            target_base_class = list(target_classes)[0]
         else:
             target_base_class = sai_helper_subclass_map[pl]
+            
 
         cur_cls = cls
+        """
+        Class __new__ method check from top to bottom(object), then recursive back for all the instances creation
+        Here, we replace the platfromSaiHelper when we hit it.
+        """
         while cur_cls.__base__ != PlatformSaiHelper:
             cur_cls = cur_cls.__base__
 
