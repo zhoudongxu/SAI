@@ -22,7 +22,6 @@ This file contains class for brcm specified functions.
 import pdb
 from socket import AddressFamily
 from platform_helper.common_sai_helper import *
-from test.saithrift.tests.switch import sai_thrift_set_hostif_trap_group # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 DEFAULT_IP_V4_PREFIX = '0.0.0.0/0'
 DEFAULT_IP_V6_PREFIX = '0000:0000:0000:0000:0000:0000:0000:0000'
