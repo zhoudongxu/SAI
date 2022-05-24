@@ -21,7 +21,7 @@ This file contains class for brcm specified functions.
 """
 import pdb
 from socket import AddressFamily
-from platform_helper.common_sai_helper import *
+from platform_helper.common_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 DEFAULT_IP_V4_PREFIX = '0.0.0.0/0'
 DEFAULT_IP_V6_PREFIX = '0000:0000:0000:0000:0000:0000:0000:0000'
@@ -66,6 +66,7 @@ class BrcmT0SaiHelper(CommonSaiHelper):
         self.create_local_v6_route()
         self.create_host_intf()
         self.turn_on_port_admin_state()
+        self.create_tunnel()
         #self.set_port_serdes()
 
 
@@ -110,15 +111,15 @@ class BrcmT0SaiHelper(CommonSaiHelper):
         self.assertNotEqual(self.default_vrf, 0)
         self.lpbk_intf = sai_thrift_create_router_interface(
             self.client, type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
-            virtual_router_id=self.default_vrf, mtu=SAI_ROUTER_INTERFACE_ATTR_MTU)
+            virtual_router_id=self.default_vrf, mtu=ROUTER_INTERFACE_MTU)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.overlay_loop_itf1 = sai_thrift_create_router_interface(
             self.client, type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
-            virtual_router_id=self.default_vrf, mtu=SAI_ROUTER_INTERFACE_ATTR_MTU)
+            virtual_router_id=self.default_vrf, mtu=ROUTER_INTERFACE_MTU)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.overlay_loop_itf2 = sai_thrift_create_router_interface(
             self.client, type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
-            virtual_router_id=self.default_vrf, mtu= SAI_ROUTER_INTERFACE_ATTR_MTU)
+            virtual_router_id=self.default_vrf, mtu= ROUTER_INTERFACE_MTU)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
 
@@ -283,9 +284,7 @@ class BrcmT0SaiHelper(CommonSaiHelper):
         print("Set port...")
         for i, port in enumerate(self.port_list):
             sai_thrift_set_port_attribute(
-                self.client, port_oid=port, mtu=PORT_MTU)
-            sai_thrift_set_port_attribute(
-                self.client, port_oid=port, admin_state=True)
+                self.client, port_oid=port, mtu=PORT_MTU, admin_state=True)
 
 
     def set_port_serdes(self):
@@ -301,7 +300,7 @@ class BrcmT0SaiHelper(CommonSaiHelper):
         """
         Create hostif trap group and policifer
         """
-        policer_id = sai_thrift_create_policer(self.client, meter_type=SAI_METER_TYPE_PACKETS, mode=SAI_POLICER_MODE_SR_TCM, cbs=600, cir=600, red_packet_action=SAI_PACKET_ACTION_DROP)
+        policer_id = sai_thrift_create_policer(self.client, meter_type=SAI_METER_TYPE_PACKETS, mode=SAI_POLICER_MODE_SR_TCM, cbs=6000, cir=6000, red_packet_action=SAI_PACKET_ACTION_DROP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         trap_group_id = sai_thrift_create_hostif_trap_group(self.client, queue=1, policer=policer_id)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
@@ -311,7 +310,7 @@ class BrcmT0SaiHelper(CommonSaiHelper):
         packet_action_list = [SAI_PACKET_ACTION_TRAP, SAI_PACKET_ACTION_COPY, SAI_PACKET_ACTION_TRAP]
         trap_type_set = [[SAI_HOSTIF_TRAP_TYPE_BGP, SAI_HOSTIF_TRAP_TYPE_BGPV6, SAI_HOSTIF_TRAP_TYPE_LACP], [SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST, SAI_HOSTIF_TRAP_TYPE_ARP_RESPONSE, SAI_HOSTIF_TRAP_TYPE_IPV6_NEIGHBOR_DISCOVERY], [SAI_HOSTIF_TRAP_TYPE_DHCP, SAI_HOSTIF_TRAP_TYPE_DHCPV6, SAI_HOSTIF_TRAP_TYPE_LLDP, SAI_HOSTIF_TRAP_TYPE_UDLD]]
         for i in range(3):
-            if i!=1:
+            if i==1:
                policer_id = sai_thrift_create_policer(self.client, meter_type=SAI_METER_TYPE_PACKETS, mode=SAI_POLICER_MODE_SR_TCM, cbs=600, cir=600, red_packet_action=SAI_PACKET_ACTION_DROP)
                self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
             else:
@@ -335,20 +334,16 @@ class BrcmT0SaiHelper(CommonSaiHelper):
 
     def create_tunnel(self):
         """
-        Create  tunnle interface  and term table entry
+        Create  tunnle interface  
         """
-        self.create_route_entry_by_ip(IPV4_USED_BY_TUNNEL, IPV6_USED_BY_TUNNEL)
-        ipv4_str = sai_ipprefix(IPV4_USED_BY_TUNNEL).addr.ip4
-        ipv6_str = sai_ipprefix(IPV6_USED_BY_TUNNEL).addr.ip6
+        #self.create_route_entry_by_ip(IPV4_USED_BY_TUNNEL, IPV6_USED_BY_TUNNEL)
+        #The router entries are used by creating tunnel table term, but these teerms are unnecessary now.
         self.tunnel_itf_v4 = sai_thrift_create_tunnel(self.client, type = SAI_TUNNEL_TYPE_IPINIP, underlay_interface= self.lpbk_intf, overlay_interface= self.overlay_loop_itf1, decap_ecn_mode=SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER, decap_ttl_mode=SAI_TUNNEL_TTL_MODE_PIPE_MODEL, decap_dscp_mode=SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.tunnel_term_table_entry_v4 =  sai_thrift_create_tunnel_term_table_entry(self.client, vr_id=self.default_vrf, type = SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP, dst_ip=sai_ipaddress(ipv4_str), tunnel_type=SAI_TUNNEL_TYPE_IPINIP, action_tunnel_id=self.tunnel_itf_v4)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         self.tunnel_itf_v6 = sai_thrift_create_tunnel(self.client, type = SAI_TUNNEL_TYPE_IPINIP, underlay_interface= self.lpbk_intf, overlay_interface= self.overlay_loop_itf2, decap_ecn_mode=SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER, decap_ttl_mode=SAI_TUNNEL_TTL_MODE_PIPE_MODEL, decap_dscp_mode=SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        self.tunnel_term_table_entry_v6 =  sai_thrift_create_tunnel_term_table_entry(self.client, vr_id=self.default_vrf, type = SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP, dst_ip=sai_ipaddress(ipv6_str), tunnel_type=SAI_TUNNEL_TYPE_IPINIP, action_tunnel_id=self.tunnel_itf_v4)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
 
     def create_route_entry_by_ip(self, ipv4, ipv6):
         """
@@ -358,7 +353,6 @@ class BrcmT0SaiHelper(CommonSaiHelper):
             self.local_10v6_route_entry
             self.local_128v6_route_entry
         """
-        #Todo make the v6 prefix from actual device config.
        
         print("Create  route entry ...")
         entry_v4 = sai_thrift_route_entry_t(
