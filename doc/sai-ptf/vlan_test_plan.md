@@ -17,11 +17,13 @@
       - [Access VLAN](#access-vlan)
     - [Composit scenario: ARP Flooding and learn](#composit-scenario-arp-flooding-and-learn)
     - [Test case: Test Frame Filtering](#test-case-test-frame-filtering)
-    - [Test case: Test native vlan](#test-case-test-native-vlan)
+    - [Test case: Test native vlan (Optional)](#test-case-test-native-vlan-optional)
   - [SAI APIs operations](#sai-apis-operations)
     - [Test case: Test VLAN related counters.](#test-case-test-vlan-related-counters)
     - [Test case: Vlan member list.](#test-case-vlan-member-list)
   - [Test Case: VLAN interface (RIF/SVI)](#test-case-vlan-interface-rifsvi)
+    - [VLAN interface to Port](#vlan-interface-to-port)
+  - [ToDO Test Case: Scaling test cases](#todo-test-case-scaling-test-cases)
 ## Overriew
 The purpose of this test plan is to test the VLAN function from SAI.
 
@@ -136,11 +138,11 @@ During testing, we need to use SAI APIs for testing. By using the SAI-PTF struct
 For testing, we can use basic FDB APIs to Add the FDB entry into CAM. The Rule as below
 |Name|MAC|PORT|VLAN|
 |-|-|-|-|
-|fdb1-4  |mac1:00:11:11:11:11:11 -  mac4:00:44:44:44:44:44|Port1-4|10|
-|fdb5-8  |mac5:00:55:55:55:55:55 -  mac8:00:88:88:88:88:88|Port5-8|10|
-|fdb9-12 |mac9:00:99:99:99:99:99 -  mac12:01:22:22:22:22:22|Port9-12|100|
-|fdb13-16|mac13:01:33:33:33:33:33 - mac16:01:66:66:66:66:66|Port13-16|100|
-|fdb17-32|mac17:01:77:77:77:77:77 - mac32:03:22:22:22:22:22|Port17-32||
+|fdb1-4  |mac1-00:11:11:11:11:11 -  mac4-00:44:44:44:44:44|Port1-4|10|
+|fdb5-8  |mac5-00:55:55:55:55:55 -  mac8-00:88:88:88:88:88|Port5-8|10|
+|fdb9-12 |mac9-00:99:99:99:99:99 -  mac12-01:22:22:22:22:22|Port9-12|100|
+|fdb13-16|mac13-01:33:33:33:33:33 - mac16-01:66:66:66:66:66|Port13-16|100|
+|fdb17-32|mac17-01:77:77:77:77:77 - mac32-03:22:22:22:22:22|Port17-32||
 
 ## Tests
 
@@ -246,9 +248,9 @@ Precondition/Setup:
 
 | Goal | Steps |  Expect  |
 |-|-|-|
-| Flooding to VLAN members. | Send ``Untagged`` packet with dest ``mac5`` on ``port6~8``. |``Tagged`` Packets from ``Trunk``, ``Untagged`` Packet from ``Access``| 
-|Unicast on VLAN port after learning.| Send ``Untagged`` packet with dest ``mac6~8`` on ``port5``.| Received ``Untagged`` packet on mac matched port.|
-|No flooding on VLAN port after learning.| Send ``Untagged`` packet with dest ``mac6~8`` on ``port5``.| No other packet than mac matched port.|
+| Flooding to VLAN members. | Send ``Tagged`` packet with dest ``mac5`` on ``port6~8``. |``Tagged`` Packets from ``Trunk``, ``Untagged`` Packet from ``Access``| 
+|Unicast on VLAN port after learning.| Send ``Tagged`` packet with dest ``mac6~8`` on ``port5``.| Received ``Untagged`` packet on mac matched port.|
+|No flooding on VLAN port after learning.| Send ``Tagged`` packet with dest ``mac6~8`` on ``port5``.| No other packet than mac matched port.|
 |MAC learning.| Use FDB SAI API to check FDB entries.| | 4 entries should be added, and marked with VLAN id.|
 
 ### Composit scenario: ARP Flooding and learn
@@ -329,7 +331,7 @@ Precondition/Setup:
 | Filter frame. | Send VLAN10 ``tagged`` packet with dest ``MacX`` on ``port1``. |Packet dropped|
 | Filter frame. | Send VLAN10 ``tagged`` packet with dest ``MAC1`` on ``port1``. |Packet dropped|
 
-### Test case: Test native vlan
+### Test case: Test native vlan (Optional)
 
 **Testing Objective**
 
@@ -489,43 +491,94 @@ Convert to config_db.json
 
 Need the APIs as below
 
-- Create Router Interface for a VLAN interface
+Create route to port 
+```python
+self.vrf = sai_thrift_create_virtual_router(self.client)
+self.rif = sai_thrift_create_route_interface(
+          self.client, type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+          virtual_router_id=self.vrf, port_id=self.destport)
+#neighbor
+self.neighbor = sai_thrift_neighbor_entry_t(
+            rif_id=self.rif, ip_address=sai_ipaddress(self.destip)) #Ingress packet dest IP
+sai_thrift_create_neighbor_entry(
+    self.client, self.neighbor,
+    dst_mac_address=self.destmac) #egress packet src mac
+
+#next hop to the port
+self.nhop = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress(self.destip), #Ingress packet dest IP
+            router_interface_id=self.rif, type=SAI_NEXT_HOP_TYPE_IP) 
+#route to port
+self.route = sai_thrift_route_entry_t(
+            vr_id=self.vrf, destination=sai_ipprefix(self.destip+'/32')) #Ingress packet dest IP
+sai_thrift_create_route_entry(self.client, self.route, next_hop_id=self.nhop)
+```
+
+- Create Router for a VLAN interface
   ```Python
-  sai_thrift_create_router_interface(
+  self.vlan10_rif = sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
             virtual_router_id=self.default_vrf,
             vlan_id=self.vlan10)
-  ```
-- Create next hop to a IP address '10.10.0.1' and mac
-  ```python
-  sai_thrift_create_next_hop(
+
+  self.nhop1 = sai_thrift_create_next_hop(
         self.client,
         ip=sai_ipaddress('10.10.0.1'),
-        router_interface_id=self.vlan100_rif,
+        router_interface_id=self.vlan10_rif,
         type=SAI_NEXT_HOP_TYPE_IP)
+  self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan10_rif, ip_address=sai_ipaddress('10.10.0.1'))
+  #Nhop to vlan interface
   sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry1, dst_mac_address=self.dmac1)
-  sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+            self.client, self.neighbor_entry1, dst_mac_address=self.dmac1) #Egress Vlan port mac
+  #Route to vlan interface
+  self.route_entry1 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix(pkt_dest_ip+'/32'))
+  sai_thrift_create_route_entry(
+            self.client, self.route_entry1, next_hop_id=self.nhop1)
   ```
 **Testing Description**
-When a switch needs to forward in layer3, it needs a vlan interface in layer3(SVI). By this vlan interface, swtich can forward the packet to other VLAN, which can be on other ports in the same switch or to other server port, that dest port then can accept packet from different ports.
+When a switch needs to forward in layer3, it needs a VLAN interface in layer3(SVI) for packet routing or Trunk connection to other devices/servers.
 ```
 Test example:
+Vlan to Port:
+  pkt(Tagged:10) -> (Trunk:10)|DUT| -> RIF(VLAN_IF->MAC:IP1) -> Port -> ...
 
-pkt(Tagged:10)  -> (Trunk:10)|DUT| -> RIF(VLAN_IF->MAC5:IP1)
-                          PORT  <- FDB(PORT:MAC)   <-|
-                                                  OR | -> Server(NHop)
+Port to Vlan:
+  pkt(Tagged:10) -> RIF(VLAN_IF->MAC:IP1)|DUT| -> (Trunk:10) -> (Access:10):pkt(Untag):Port -> ...
 ```
+
+### VLAN interface to Port 
+VLAN interface input packet
+  ```Python
+  simple_tcp_packet(
+            eth_dst=VLAN_TARGET_MAC, #Forwarding to a vlan
+            eth_src=SRC_MAC,
+            ip_dst=DEST_IP,
+            ip_src=SRC_IP,
+            vlan_vid=100)
+  ```
+
+VLAN interface output packet
+  ```Python
+  simple_tcp_packet(
+            eth_dst=L3_PORT_MAC, 
+            eth_src=SVI_MAC,
+            ip_dst=DEST_IP,
+            ip_src=SRC_IP)
+  ```
 
 **Precondition/Setup:**
 - Create VLAN as the basic configuration.
 - Create an FDB table as a basic configuration.
+- Create VLAN Interface for ``VLAN10`` with ``IP1``
+- Create route DESTIP:IP1 to ``PORT20``
 
 Below is the test for checking this.
 |  Goal |Steps/Cases | Expect  |
 |-|-|-|
-|  Create a VLAN interface. |Create route entry and next hop for VLAN 10, with [IP1] and [mac5].| Vlan interface created.|
-| Add FDB entries for RIF. MAC is [mac5], and map it to Port5 in the FDB entry. |Simulate the mac learning.| Set up forwarding table|
-| Forwarding from trunk to a trunk port on native VLAN.| Send ``tagged`` packet with dest mac3 on port1. |  ``tagged`` packet received on ``port5``.|
+| Forwarding ``Untagged`` packet on ``VLAN_INTERFACE``.| Send ``tagged`` packet with dest mac5 on port1. |  ``Untagged`` packet received on ``port20``.|
+
+
+## ToDO Test Case: Scaling test cases 
