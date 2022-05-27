@@ -52,6 +52,8 @@ During testing, we need to use SAI APIs for testing. By using the SAI-PTF struct
 Cause the test bed might also encounter some issue, like the host interface is down. 
 Before run the actual test there will be need some sanity test to check the DUT status, and select the active ports for testing.
 
+**Then all the port indexes in this test plan just to illustarate the test purpose, they are not exactlly the same for the actual environment, please make adjustment as needed.**
+
 ### Basic VLAN configuration
 |VLAN ID|Ports|Tag mode|HostIf
 |-|-|-|-|
@@ -139,7 +141,7 @@ For testing, we can use basic FDB APIs to Add the FDB entry into CAM. The Rule a
 ### Packet example
 - Tagged packet with VLAN id 
 
-   When a packet sent to a access port or send out from a access port, we will get a packet with the VLAN id.
+   When a packet sent to a access port or send out from a access port, we will get a packet without the VLAN id.
    *In T0, we don't need to test tagged packet.*
    ```python
     tagged_packet(eth_dst='00:11:11:11:11:11',
@@ -164,8 +166,8 @@ For testing, we can use basic FDB APIs to Add the FDB entry into CAM. The Rule a
 Testing L3 switch, VLAN-Interface(SVI) in layer3 for packet routing.
 
 In this case, it will cover the scenarios like
-- Server to T1 
-- Server to Server
+- Server to T1 (north/south)
+- Server to Server (east/west)
 #### Test the configuration 
 For VLAN-Interface(SVI), it can be configured from a config_db.json. This json file, can be generated from a xml config as below. Base on this configuration we can see what the actual configuration will be.
 
