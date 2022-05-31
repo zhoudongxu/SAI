@@ -39,16 +39,22 @@ The test will include two parts
 # Basic Configurations, SAI API and sample packets
 
 ## Basic Configurations And SAI API
+
+### Testbed stablization and impact
+Cause the test bed might also encounter some issue, like the host interface is down.
+Before run the actual test there will be need some sanity test to check the DUT status, and select the active ports for testing.
+**Then all the port indexes in this test plan just to illustarate the test purpose, they are not exactlly the same for the actual environment, please make adjustment as needed.**
+
 ### Basic Portchannel configuration
 |PortChannel Name|Ports|
 |-|-|
-| lag3  |Port14-16|
+| lag3  |Port14-15|
 #### Create lag and lag member Using SAI API
 ```Python
     +------------+------------+-----------+-----------+
     |    lag3    |     --     |  port14   |     --    |
     |  lag3_rif  |            |  port15   |           |
-    |            |            |  port16   |           |
+    |            |            |           |           |
     +------------+------------+-----------+-----------+
     sai_thrift_create_lag(self.client)
     
@@ -56,8 +62,7 @@ The test will include two parts
             self.client, lag_id=self.lag3, port_id=self.port14)
      self.lag3_member15 = sai_thrift_create_lag_member(
             self.client, lag_id=self.lag3, port_id=self.port15)
-     self.lag3_member16 = sai_thrift_create_lag_member(
-            self.client, lag_id=self.lag3, port_id=self.port16)
+  
            
       self.lag3_rif = sai_thrift_create_router_interface(
             self.client,
@@ -91,21 +96,21 @@ The test will include two parts
 ## Packets
 ```Python
    pkt = simple_tcp_packet(
-                eth_dst=dev_port11_MAC,
+                eth_dst=dev_port_MAC,
                 eth_src='00:22:22:22:22:22',
                 ip_dst='10.10.10.2',
                 ip_src=srcip) 
                 
    exp_pkt = simple_tcp_packet(
                 eth_dst='00:99:99:99:99:99',
-                eth_src=dev_port11_MAC,
+                eth_src=dev_port_MAC,
                 ip_dst='10.10.10.2',
                 ip_src=srcip)
 ```
 
 # Test suites
 ## Test suite #1: PortChannel Loadbalanceing
-For load balancing, expecting the ports in a lag should receive the packet equally.
+For load balancing, expecting the ports in a lag should receive the packet equally. Traffic direction: from server side to T1 side
 
 Even after removing and disabling the port in a lag.
 
@@ -124,8 +129,8 @@ Sample SAI API
 
 |  Goal| Steps/Cases  | Expect  |
 |-|-|-|
-| Prepare to send from dev_port11 to Lag3.| Send packet with.| Lag3 and members have been created.|
-| Packet forwards on port equally.| Send packet on dev_port11 to the lag3  4 times .| Loadbalance on lag members.|
+| Prepare to send from dev_port to Lag3.| Send packet with.| Lag3 and members have been created.|
+| Packet forwards on port equally.| Send packet on dev_port11 to the lag3  100 times .| Loadbalance on lag members.|
 | Packet forwards on available ports equally.| Every time, disable egress/ingress on one lag member, then send packet | Loadbalance on lag members.|
 | Packet forwards on available ports equally.| Every time, enable egress/ingress on one lag member, then send packet | Loadbalance on lag members.|
 | Packet forwards on available ports equally.| Every time, remove one lag member, then send packet | Loadbalance on lag members.|
@@ -137,12 +142,12 @@ Sample APIs
 
 Remove Lag member
 ```python
-     print("Remove LAG member 16")
-     status = sai_thrift_remove_lag_member(self.client, self.lag3_member16)
+     print("Remove LAG member 15")
+     status = sai_thrift_remove_lag_member(self.client, self.lag3_member15)
 ```
 | Goal | Steps/Cases | Expect  |
 |-|-|-|
-|Remove port16 and forwarding packet from port1 to port14,15|Remove port16 form Lag3 and Send packet on dev_port11 to lag3 100 times| Port14 and port15 will receive an equal number of packets.|
+|Remove port16 and forwarding packet from dev_port to port14|Remove port15 form Lag3 and Send packet on dev_port to lag3 100 times| Port14 will receive an equal number of packets.|
 
 
 ## Test suite #3: Ingress/Egreee disable
