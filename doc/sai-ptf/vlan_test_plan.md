@@ -35,7 +35,7 @@
       - [Additional config:](#additional-config-2)
       - [Test Cases](#test-cases-5)
   - [Composit scenario](#composit-scenario)
-    - [VLAN-Interface (SVI)](#vlan-interface-svi)
+    - [L3 switching(Inter-VLAN)](#l3-switchinginter-vlan)
       - [Testing Objective](#testing-objective-6)
       - [Test Data/Packet](#test-datapacket-5)
       - [Test Cases](#test-cases-6)
@@ -237,26 +237,24 @@ When disabled, no new MAC will be learned in the MAC table.
 
 ## Composit scenario
 
-### VLAN-Interface (SVI) 
+### L3 switching(Inter-VLAN) 
 #### Testing Objective
 
-Testing L3 switch, VLAN-Interface(SVI) in layer3 for packet routing (Inter-VLAN).
+Testing L3 switching(Inter-VLAN).
 
 In this case, it will cover the scenarios for Server to Server (east/west) in different VLAN(Inter-VLAN)
 
 ```
 Server To Server
-  PC1 -> pkt(Untag) -> |DUT|Port1:Access:VLAN1000 -> SVI:vlan1000 |
-                                                                  | <-> |Virtual Switch|
-  PC2 <- pkt(Untag) <- |DUT|Port9:Access:VLAN2000 <- SVI:vlan2000 |
+  PC1 -> pkt(Untag) -> |DUT|Port1:Access:VLAN1000 
+                                              |L3| <-> |Virtual Switch| 
+  PC2 <- pkt(Untag) <- |DUT|Port9:Access:VLAN2000
 ```
 *All the layer 3 router tables are created as the basic config, not MAC and ARP learning in this test process.*
 The process is as below:
 1. PC1 sends a untag packet to port1, which is a VLAN1000 access port
-2. Packet goes through VLAN1000 port1
-3. Based on packet dest IP and dest MAC, VLAN1000 MAC and IP derived from L3 tables, SRC MAC change to SVI MAC, Dest MAC change to VLAN1000 MAC, forwarding to VLAN1000
-4. Dest MAC and IP derived from L3 tables, SRC MAC change to SVI MAC, Dest MAC change to PORT MAC, forwarding to PORT9
-5. Packet goes through VLAN2000 port9
+2. Based on packet dest IP, derive the route to the dest IP, Dest MAC and Port derived from L3 table. Then SRC MAC change to Switch MAC, Dest MAC change to PORT MAC, forwarding to PORT9
+3. Packet goes through VLAN2000 port9
 
 #### Test Data/Packet
 - Input Packet
@@ -279,7 +277,7 @@ The process is as below:
 #### Test Cases
 |  Goal | Case | Expect  |
 |-|-|-|
-| Forwarding packet on ``VLAN_INTERFACE`` .| Send ``Untagged`` packet on port1 with dest ``SVI_MAC``. |  ``Untagged`` packet received on ``PORT9``.|
+| Inter-VLAN switching .| Send ``Untagged`` packet on port1 with dest ``SVI_MAC``. |  ``Untagged`` packet received on ``PORT9``.|
 
 
 
