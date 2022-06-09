@@ -16,7 +16,7 @@
     - [Case7: test_untagged_mac_learning](#case7-test_untagged_mac_learning)
     - [Case8: test_tagged_mac_learning](#case8-test_tagged_mac_learning)
   - [Test Case9: Vlan member API](#test-case9-vlan-member-api)
-  - [Test Case10: Failed to add member to invalidate VLAN](#test-case10-failed-to-add-member-to-invalidate-vlan)
+  - [Test Case10: Add member to invalidate VLAN](#test-case10-add-member-to-invalidate-vlan)
   - [Test Group: VLAN Counters/Status](#test-group-vlan-countersstatus)
     - [Case11: test_tagged_vlan_status](#case11-test_tagged_vlan_status)
     - [Case12: test_untagged_vlan_status](#case12-test_untagged_vlan_status)
@@ -83,10 +83,9 @@ Tagged:
 ```
 
 ### Test steps: <!-- omit in toc --> 
-Test Steps:
-  - Create ``Untagged``/``Tagged VLAN 1000`` packet with ``mac2`` as dest mac.
-  - Send packet on Port1.
-  - Verify ``Untagged`` packet received port2.
+  1. Create ``Untagged``/``Tagged VLAN 1000`` packet with ``mac2`` as dest mac.
+  1. Send packet on Port1.
+  1. Verify ``Untagged`` packet received port2.
 
 ## Test Group: Frame Filtering
 ### Case3: test_untagged_frame_filtering
@@ -104,10 +103,10 @@ Test example(Untag):
 ```
 
 ### Test steps <!-- omit in toc --> 
-  - Add another ``MacX`` as Port1 mac address into MAC table
-  - Create ``Untagged``/``Tagged VLAN1000`` packet, ``mac1`` as src mac, ``MacX`` as dest mac
-  - Send packet on VLAN Port.
-  - Verify no packet received on any port.
+  1. Add another ``MacX`` as Port1 mac address into MAC table
+  1. Create ``Untagged``/``Tagged VLAN1000`` packet, ``mac1`` as src mac, ``MacX`` as dest mac
+  1. Send packet on VLAN Port.
+  1. Verify no packet received on any port.
 
 ## Test Group: VLAN flooding
 ### Case5: test_tagged_vlan_flooding
@@ -123,9 +122,9 @@ Flooding
 
 
 ### Test Steps: <!-- omit in toc --> 
-  - Create ``Untagged``/``Tagged VLAN1000`` packet, with ``mac1`` as source MAC and a un-existing ``MacX`` as dest MAC
-  - Send packet on Port1.
-  - Verify received packet on all port expect Port1.
+  1. Create ``Untagged``/``Tagged VLAN1000`` packet, with ``mac1`` as source MAC and a un-existing ``MacX`` as dest MAC
+  1. Send packet on Port1.
+  1. Verify received packet on all port expect Port1.
 
 ## Test Group: MAC learning
 ### Case7: test_untagged_mac_learning
@@ -139,10 +138,10 @@ For mac learning in VLAN scenario, after learning the mac address from the packe
 
 ```
 ### Test Steps: <!-- omit in toc --> 
-  - Create ``Untagged``/``Tagged VLAN1000`` packet, with a un-existing ``MacX`` as src MAC and ``mac2`` as dest MAC
-  - Send packet on a VLAN source port1.
-  - Verify packet received on port2.
-  - Verify MAC table get a new entry for ``MacX`` on port1, 
+  1. Create ``Untagged``/``Tagged VLAN1000`` packet, with a un-existing ``MacX`` as src MAC and ``mac2`` as dest MAC
+  1. Send packet on a VLAN source port1.
+  1. Verify packet received on port2.
+  1. Verify MAC table get a new entry for ``MacX`` on port1, 
 
 
 ## Test Case9: Vlan member API
@@ -153,21 +152,20 @@ For mac learning in VLAN scenario, after learning the mac address from the packe
 Test VLAN and member APIs.
 
 ### Test steps: <!-- omit in toc --> 
-Test steps:
-  - Use VLAN API to list all of the VLAN member in VLAN
-  - Verify the VLAN member and the account of the VLAN member are same as config in [config](./config_data/config_t0.md)
-  - Use VLAN API add a new Member, into VLAN
-  - Verify the VLAN member and the account of the VLAN member are increased by 1.
+  1. Use VLAN API to list all of the VLAN member in VLAN
+  1. Verify the VLAN member and the account of the VLAN member are same as config in [config](./config_data/config_t0.md)
+  1. Use VLAN API add a new Member into VLAN
+  1. Verify the VLAN member and the account of the VLAN member are increased by 1.
 
-## Test Case10: Failed to add member to invalidate VLAN
+## Test Case10: Add member to invalidate VLAN
   - test_add_vlan_member_failed
 ### Testing Objective <!-- omit in toc --> 
 
 When add a VLAN member to a non-exist VLAN, it will fail.
 
 ### Test Steps: <!-- omit in toc --> 
-  - Use VLAN API add a new Member to a non-exist VLAN, ``VLAN1010``
-  - Verify the VLAN member added failed.
+  1. Use VLAN API add a new Member to a non-exist VLAN, ``VLAN1010``
+  1. Verify the VLAN member added failed.
 
 ## Test Group: VLAN Counters/Status
 ### Case11: test_tagged_vlan_status
@@ -177,14 +175,13 @@ When add a VLAN member to a non-exist VLAN, it will fail.
 For VLAN-related counters, SAI should be able to get the counter and clear them.
 
 ### Test Steps: <!-- omit in toc --> 
-Steps:
-  - Use SAI API to get the VLAN Status ``_sai_vlan_stat_t`` from [VLAN_HEADER](https://github.com/opencomputeproject/SAI/blob/master/inc/saivlan.h) 
-  - Create ``Untagged``/``Tagged VLAN1000`` packet, with ``mac1`` as src MAC and ``mac2`` as dest MAC
-  - Send packet from the source port1
-  - Verify packet received on the target port2
-  - Verify counters increased, bytes counter: OCTETS increased, other counters + 1
-  - Use VLAN clear status API
-  - Verify counters have been reset
+  1. Use SAI API to get the VLAN Status ``_sai_vlan_stat_t`` (defined in [saivlan.h](https://github.com/opencomputeproject/SAI/blob/master/inc/saivlan.h) )
+  2. Create ``Untagged``/``Tagged VLAN1000`` packet, with ``mac1`` as src MAC and ``mac2`` as dest MAC
+  3. Send packet from the source port1
+  4. Verify packet received on the target port2
+  1. Verify counters increased, bytes counter: OCTETS increased, other counters + 1
+  2. Use VLAN clear status API
+  3. Verify counters have been reset
 
 ## Test Group7: Disable mac learning
 ### Case13: test_disable_mac_learning_tagged
@@ -197,10 +194,10 @@ When disabled, no new MAC will be learned in the MAC table.
 - Do not config the MAC table
 
 ### Test steps: <!-- omit in toc --> 
-  - Create ``Untagged``/``Tagged VLAN1000`` packet, with ``mac1`` as src MAC and ``mac2`` as dest MAC
-  - Send packet from the source port1.
-  - Verify packets received on all ports except the source port1.
-  - Verify MAC table, no new entry added in MAC table
+  1. Create ``Untagged``/``Tagged VLAN1000`` packet, with ``mac1`` as src MAC and ``mac2`` as dest MAC
+  1. Send packet from the source port1.
+  1. Verify packets received on all ports except the source port1.
+  1. Verify MAC table, no new entry added in MAC table
 
 ## Test Case15: L3 switching(Inter-VLAN) 
 ### Testing Objective <!-- omit in toc --> 
@@ -240,9 +237,9 @@ The process is as below:
             ip_src=SRC_IP)
   ```
 ### Test Steps: <!-- omit in toc --> 
-  - Create Packet, with with dest ``SVI_MAC`` as dest mac, and dest IP ``192.168.20.21``(config as [Config_t0](./config_data/config_t0.md))
-  - Send ``Untagged`` packet on ``port1``
-  - Verify ``Untagged`` packet received on ``PORT9``
+  1. Create Packet, with with dest ``SVI_MAC`` as dest mac, and dest IP ``192.168.20.21``(config as [Config_t0](./config_data/config_t0.md))
+  1. Send ``Untagged`` packet on ``port1``
+  1. Verify ``Untagged`` packet received on ``PORT9``
 
 ## Test Group: ARP Flooding and mac learning
 ### Case16: test_arp_request_flooding
@@ -309,10 +306,10 @@ Test example:
 
 ### Test Steps: <!-- omit in toc --> 
 - test_arp_request_flooding
-  - Create ARP packet with dest ``mac2``
-  - Send ``Untagged`` ARP packet on ``port1``
-  - Verify ``Untagged`` Arp request received from Port2 to Port8
+  1. Create ARP packet with dest ``mac2``
+  1. Send ``Untagged`` ARP packet on ``port1``
+  1. Verify ``Untagged`` Arp request received from Port2 to Port8
 - test_arp_response_learning
-  - Create ARP response packet with src:mac2, dest:mac1
-  - Send ARP response packet on port2
-  - Verify ``Untagged`` ARP response from Port1
+  1. Create ARP response packet with src:mac2, dest:mac1
+  1. Send ARP response packet on port2
+  1. Verify ``Untagged`` ARP response from Port1

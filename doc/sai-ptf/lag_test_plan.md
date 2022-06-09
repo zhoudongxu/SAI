@@ -13,7 +13,7 @@
   - [Test Group: Disable Egress/Ingress](#test-group-disable-egressingress)
     - [Case6: test_disable_egress](#case6-test_disable_egress)
     - [Case7: test_disable_ingress](#case7-test_disable_ingress)
-  - [Test Group: Remove/Add  LAG member](#test-group-removeadd-lag-member)
+  - [Test Group: Remove/Add  LAG member](#test-group-removeadd--lag-member)
     - [Case8: test_remove_lag_member](#case8-test_remove_lag_member)
     - [Case9: test_add_lag_member](#case9-test_add_lag_member)
 # Overriew
@@ -84,9 +84,9 @@ These cases will cover five scenarios: src/dst ip, src/dst port , protocol. cons
 For load balancing, expecting the ports in a lag should receive the packet equally. Traffic direction: from server side to T1 side. 
 
 ### Test steps: <!-- omit in toc --> 
-- Generate different packets by updating source port, destination port, source ip, and destination ip of the packet. Packets use lag1 neighbor IPs as destination ip, lag1 neighbor MAC as destination MAC.
-- Send these packetes with different protocols on port1. 
-- Check if packets are recieved on ports of lag1 equally.
+1. Generate different packets by updating source port, destination port, source ip, and destination ip of the packet. Packets use lag1 neighbor IPs as destination ip, lag1 neighbor MAC as destination MAC.
+1. Send these packetes with different protocols on port1. 
+1. Check if packets are recieved on ports of lag1 equally.
 
 ## Test Group: Disable Egress/Ingress
 
@@ -98,13 +98,13 @@ For load balancing, expecting the ports in a lag should receive the packet equal
 These cases will cover two scenarios: disable egress and ingress.  We can disable ingress or egress on a lag member, then we expect traffic drop on the disabled lag member.
 
 ### Test steps: <!-- omit in toc -->
-- Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
-- Send packet from port1 
-- Verify packets appear on differnt lag1 members.
-- Disable egress/ingress on lag1 member port18
-- Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
-- Send packet from port1
-- Check if Packet drop on port18
+1. Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
+1.  Send packet from port1 
+1.  Verify packets appear on different lag1 members.
+1.  Disable egress/ingress on lag1 member port18
+1. Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
+1.  Send packet from port1
+1. Check if Packet drop on port18
 
 ## Test Group: Remove/Add  LAG member
 ### Case8: test_remove_lag_member
@@ -114,18 +114,18 @@ These cases will cover add and  remove lag memeber .  We can remove or add a lag
 
 ### Test steps: <!-- omit in toc -->
 - test_remove_lag_member
-  - Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
-  - Send packet from port0 
-  - Verify packets appear on  lag1 port18.
-  - Remove port18 from lag1
-  - Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
-  - Send packet from port0 
-  - Check if Packet drop on port18
+  1. Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
+  1. Send packet from port0 
+  1. Verify packets appear on  lag1 port18.
+  1. Remove port18 from lag1
+  1. Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
+  1. Send packet from port0 
+  1. Check if Packet drop on port18
 - test_add_lag_member
-  - Add port21 to lag1
-  - Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
-  - Send packet from port0 
-  - Verify packets appear on  lag1 port21.
+  1. Add port21 to lag1
+  1. Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
+  1. Send packet from port0 
+  1. Verify packets appear on  lag1 port21.
 
 
 
