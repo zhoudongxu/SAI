@@ -305,11 +305,18 @@ Test example:
 - Do not config the MAC table
 
 ### Test Steps: <!-- omit in toc --> 
+
 - test_arp_request_flooding
+
+
   1. Create ARP packet with dest ``mac2``
-  1. Send ``Untagged`` ARP packet on ``port1``
-  1. Verify ``Untagged`` Arp request received from Port2 to Port8
+  2. Send ``Untagged`` ARP packet on ``port1``
+  3. Verify ``Untagged`` Arp request received from Port2 to Port8
+
+
 - test_arp_response_learning
+
+
   1. Create ARP response packet with src:mac2, dest:mac1
-  1. Send ARP response packet on port2
-  1. Verify ``Untagged`` ARP response from Port1
+  2. Send ARP response packet on port2
+  3. Verify ``Untagged`` ARP response from Port1

@@ -114,18 +114,21 @@ These cases will cover add and  remove lag memeber .  We can remove or add a lag
 
 ### Test steps: <!-- omit in toc -->
 - test_remove_lag_member
+
   1. Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
-  1. Send packet from port0 
-  1. Verify packets appear on  lag1 port18.
-  1. Remove port18 from lag1
-  1. Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
-  1. Send packet from port0 
-  1. Check if Packet drop on port18
+  2. Send packet from port1
+  3. Verify packets appear on  lag1 port18.
+  4. Remove port18 from lag1
+  5. Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
+  6. Send packet from port1 
+  7. Check if Packet drop on port18
+   
 - test_add_lag_member
+  
   1. Add port21 to lag1
-  1. Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
-  1. Send packet from port0 
-  1. Verify packets appear on  lag1 port21.
+  2. Create packets with variations of the src_ip, dest_ip, src_port,dest_port.(dest_ip is lag1 neighbor IP and MAC is lag1 neighbor MAC)
+  3. Send packet from port1 
+  4. Verify packets appear on  lag1 port21.
 
 
 
