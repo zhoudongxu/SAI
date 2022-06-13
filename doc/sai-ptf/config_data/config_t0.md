@@ -22,10 +22,10 @@ This document describes the sample configuration data.
 **Note: This configuration focused on T0 topology.**
 
 # IP and MAC naming convention
-In this configuration, we mapped the IP and MAC address into different part of this configuration as below.
+In this configuration, we mapped the IP and MAC address into different parts of this configuration as below.
 
 ## MAC
-For MAC addres, we can use differnt section in MAC address to map different title number.
+For MAC addresses, we can use different sections in the MAC addresses to map different title numbers.
 The pattern is
 ```
 L1_NUM:L2_NUM:L3_NUM:ROLE:EXTRA:SEQ
@@ -33,47 +33,33 @@ ROLE: T1=1, Server=99
 ```
 
 For example:
-For the MAC address in FDB configuration.
-
+For the MAC address in ``1.1 FDB Configuration``.
 ```
-#VLAN 10, Server MAC
-01:01:00:99:10:01~01:01:00:99:10:32
-# FDB Configuration is 1.1, then first two sections is 01:01
+#Server MAC
+01:01:00:99:02:01~01:01:00:99:02:32
 # 99: Server
-# 10: VLAN
-
-#T0 Ports MAC
-01:01:00:00:00:01~01:01:00:00:00:32
+# 02: EXTRA (Group ID)
 ```
 
-For the VLAN Neighbor(Server) MAC
-```
-02:04:01:00:99:01~02:04:01:00:99:32
-```
 
 ## IP
-For Mac address, we will use different IP subnet for different device role(only for T0, T1 and server), and map different number in L3 sub-title within second and third IP sections.
+For IP addresses, we will use different prefix for different role
 
-Format: ROLE_NUM+L3_SUB_NUM.L3_SUB2_NUM.EXTRA.SEQ
+Format: ROLE.NUM.GROUP_ID.SEQ
 
-- Subnet
-T0: 10.0.0.0/24
-T1: 20.0.0.0/24
-Server: 30.0.0.0/24
+- ROLE_NUM
+T0: 10.0.0.0
+T1: 10.0.0.0
+Server: 192.168.0.0
 
 For example
 ```
-#2.1 VLAN Interface
-#T0 Host interfaces
-11.0.0.1~11.0.0.32
-
-#2.3.1 VLAN interfaces route entries
-#VLAN 10
-33.1.10.1~33.1.10.32
-#VLAN 20
-33.1.20.1~33.1.20.32
-## 33.1 = 30(Server) + 3(Title No.), 1(Title No.)
-## 10= VLAN 10, 20=VLAN 20
+# IP in 
+# 2.4.1 VLAN Neighbors
+#Group0 (For Vlan10)
+192.168.1.1~ 192.168.1.8
+#Group1 (ForVlan20)
+192.168.2.1~ 192.168.2.8
 ```
 
 
@@ -86,16 +72,14 @@ For example
 The MAC Table for VLAN L2 forwarding as below
 |Name|MAC|PORT|VLAN|HostIf|
 |-|-|-|-|-|
-|mac0|01:01:00:99:00:01|Port0||Ethernet0|
-|mac1-8  |01:01:00:99:10:01 - 01:01:00:99:10:08|Port1-8|10|Ethernet4-Ethernet32|
-|mac9-16 |01:01:00:99:20:09 - 01:01:00:99:20:16|Port9-16|20|Ethernet36-Ethernet64|
-|mac17-mac31 |01:01:00:99:00:17 - 01:01:00:99:00:31|Port17-31||Ethernet68-Ethernet124|
+|mac0|01:01:00:99:00:00|Port0||Ethernet0|
+|mac1-8  |01:01:00:99:01:01 - 01:01:00:99:01:08|Port1-8|10|Ethernet4-Ethernet32|
+|mac9-16 |01:01:00:99:02:09 - 01:01:00:99:02:16|Port9-16|20|Ethernet36-Ethernet64|
 
 ## 1.2 VLAN configuration
 
 |HostIf|VLAN ID|Ports|Tag mode|
 |-|-|-|-|
-|Ethernet0||Port0||
 |Ethernet4-32|10|Port1-8|Untag|
 |Ethernet36-72|20|Port9-16|Untag|
 
@@ -103,16 +87,15 @@ The MAC Table for VLAN L2 forwarding as below
 # 2. L3 configuration
 
 Host interface IP
-|Port|VLAN Interface IP| 
+|Port|Interface IP| 
 |-|-|
 |port0|10.0.0.100|
-|port1-31|10.0.0.1-10.0.0.31|
 
 ## 2.1 VLAN Interfaces
 |VLAN ID | VLAN Interface IP| 
 |-|-|
-|10|11.0.10.1|
-|20|11.0.20.1|
+|10|192.168.1.100|
+|20|192.168.2.100|
 
 ## 2.2 LAG configuration
 
@@ -122,8 +105,8 @@ Host interface IP
 |Ethernet84-88|lag2|Port19-20|
 
 ### 2.2.1 LAG Hash Rule
-- Set hash alogrithm as SAI_HASH_ALGORITHM_CRC
-- Set switch hash attribute as below, which mean switch computes hash value  using the five fields of packet. 
+- Set hash algorithm as SAI_HASH_ALGORITHM_CRC
+- Set switch hash attribute as below, which means switch computes hash using the five fields and seed(SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED) as the hash configuration. 
 ```
 SAI_NATIVE_HASH_FIELD_SRC_IP
 SAI_NATIVE_HASH_FIELD_DST_IP
@@ -137,32 +120,28 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 ### 2.3.1 VLAN interfaces route entries
 |VLAN ID | route IP | Type |
 |-|-| - |
-|10| 34.1.10.100/24 | Direct Connect|
-|20| 34.1.20.100/24 | Direct Connect|
+|10| 192.168.1.100/24 | Direct Connect|
+|20| 192.168.2.100/24 | Direct Connect|
 ### 2.3.2 LAG Route entry
 
-|LAG ID | route IP | Type |
-|-|-| - |
-|1| 24.2.1.100/24 | Direct Connect|
-|2| 24.2.2.100/24 | Direct Connect|
+|LAG ID | route IP | Type | VALUE|
+|-|-| - |-|
+|1| 10.0.1.100/31 | Direct Connect||
+|2| 10.0.2.100/31 | Direct Connect||
+|1| 192.168.10.1-192.168.10.100| NH|lag1_nb|
+|2| 192.168.11.1-192.168.11.100| NH|lag2_nb|
 
 ## 2.4 Neighbor Configuration
 ### 2.4.1 VLAN Neighbors
 |Name|Port|IP|dest_mac|
 |-|-|-|-|
-|vlan10_nb1-nb8|Port1-8| 34.1.10.1 ~ 34.1.10.8 | 02:04:01:99:10:01 - 02:04:01:99:10:08|
-|vlan20_nb1-nb8|Port9-16|34.1.20.9 ~ 34.1.20.16 |02:04:01:99:20:09 - 02:04:01:99:20:16 |
+|vlan10_nb1-nb8|Port1-8 |192.168.1.1 ~ 192.168.1.8  |01:01:00:99:01:01 - 01:01:00:99:01:08|
+|vlan20_nb1-nb8|Port9-16|192.168.2.9 ~ 192.168.2.16 |01:01:00:99:02:09 - 01:01:00:99:02:16 |
 
 
 ### 2.4.2 LAG Neighbors
 
 |Name|Port|IP|dest_mac|
 |-|-|-|-|
-|lag1_nb1-nb8|lag1| 24.2.1.1 ~ 24.2.1.99 | 02:04:02:01:01:01 - 02:04:02:01:01:99|
-|lag2_nb1|lag2|24.2.2.1 ~ 24.2.2.99 | 02:04:02:01:02:01 - 02:04:02:01:02:99|
-
-
-
-
-
-
+|lag1_nb|lag1| 10.0.1.101 | 02:04:02:01:01:01|
+|lag2_nb|lag2| 10.0.2.101 | 02:04:02:01:02:01|
