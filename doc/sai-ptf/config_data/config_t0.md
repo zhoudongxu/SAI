@@ -106,7 +106,7 @@ Host interface IP
 |-|-|-|
 |Ethernet76-80|lag1|Port17-18|
 |Ethernet84-88|lag2|Port19-20|
-
+|Ethernet84-88|lag3|Port21-22|
 ### 2.2.1 LAG Hash Rule
 - Set hash algorithm as SAI_HASH_ALGORITHM_CRC
 - Set switch hash attribute as below, which means switch computes hash using the five fields and seed(SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED) as the hash configuration. 
@@ -132,13 +132,12 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 |1| 10.0.1.100/31 | Direct Connect||
 |2| 10.0.2.100/31 | Direct Connect||
 |1| 192.168.10.1-192.168.10.100| NH|lag1_nb|
-|2| 192.168.11.1-192.168.11.100| NH|lag2_nb|
 
 ### 2.3.3  Tunnel Route entry
 |Next Hop Name | Dst route IP |Next Hop Type |
 |-|-| - |-|
-|tunnel_pipe_nh|vm_ip_from_port22_nb: 192.192.1.1| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
-|tunnel_uniform_nh|vm_ip_from_port23_nb: 192.192.1.2| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
+|tunnel_pipe_nh|vm_ip_from_lag2_nb: 192.192.1.1| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
+|tunnel_uniform_nh|vm_ip_from_lag3_nb: 192.192.1.2| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
 
 ## 2.4 Neighbor Configuration
 ### 2.4.1 VLAN Neighbors
@@ -153,25 +152,25 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 |Name|Port|IP|dest_mac|
 |-|-|-|-|
 |lag1_nb|lag1| 10.0.1.101 | 02:04:02:01:01:01|
-|lag2_nb|lag2| 10.0.2.101 | 02:04:02:01:02:01|
+
 
 ### 2.4.3 Tunnel Neighbors
 
 |Name|Port|IP|dest_mac|
 |-|-|-|-|
-|port22_nb|22| 10.0.3.101 | 02:04:02:01:01:01|
-|port23_nb|23| 10.0.4.101 | 02:04:02:01:02:01|
+|lag2_nb|lag2| 10.0.2.101 | 03:04:03:01:03:01|
+|lag3_nb|lag3| 10.0.3.101 | 04:04:04:01:04:01|
 
 
 ## 2.5 Tunnel Configuration
 - Config t0 loopback:
-  
-  |Name|IP|
-  |-|-|
-  |Router_lpb_ip_pipe_v4| 10.10.10.1|
-  |Router_lpb_ip_uniform_v4| 10.10.10.2|
-  |Router_lpb_ip_pipe_v6| 2001:0db8::10:1|
-  |Router_lpb_ip_uniform_v6| 2001:0db8::10:2|
+ 
+     |Name|IP|
+     |-|-|
+     |Router_lpb_ip_pipe_v4| 10.10.10.1|
+     |Router_lpb_ip_uniform_v4| 10.10.10.2|
+     |Router_lpb_ip_pipe_v6| 2001:0db8::10:1|
+     |Router_lpb_ip_uniform_v6| 2001:0db8::10:2|
 
 
 - Tunnel_pipe:
@@ -189,11 +188,11 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
   3. Create tunnel term table entry with attribute    
      |type|dst_ip|src_ip|type|
      |-|-|-|-|
-     |Router_lpb_ip_pipe_v4|port23_nb:10.0.3.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
-  4. Create tunnel tpe nexhop called tunnel_pipe_nh with type 
+     |Router_lpb_ip_pipe_v4|lag2_nb:10.0.2.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
+  4. Create tunnel type nexhop called tunnel_pipe_nh with type 
      |type|IP|MAC_NAME|MAC|
      |-|-|-|-|
-     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|port22_nb:10.0.3.101| tunnel_nexhop_inner_mac_uniform| 03:04:03:01:03:01|
+     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|lag2_nb:10.0.2.101| tunnel_nexhop_inner_mac_uniform| 03:04:03:01:03:01|
 
      then using tunnel_pipe_nh to create route entry, pls refer to 2.3.3 section
 
@@ -211,11 +210,11 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
   3. Create tunnel term table entry with attribute 
      |type|dst_ip|src_ip|type|
      |-|-|-|-|
-     |Router_lpb_ip_uniform_v4|port23_nb:10.0.4.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
+     |Router_lpb_ip_uniform_v4|lag3_nb:10.0.3.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
 
   4. Create tunnel tpe nexhop called tunnel_pipe_nh 
      |type|IP|MAC_NAME|MAC|
      |-|-|-|-|
-     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|port23_nb:10.0.4.101| tunnel_nexhop_inner_mac_uniform|04:04:04:01:04:01|
+     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|lag3_nb:10.0.3.101| tunnel_nexhop_inner_mac_uniform|04:04:04:01:04:01|
 
      then using tunnel_uniform_nh to create route entry, pls refer to 2.3.3 section
