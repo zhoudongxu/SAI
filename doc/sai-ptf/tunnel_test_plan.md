@@ -83,17 +83,17 @@ Encap packet:
     inner_pkt = simple_tcp_packet(
                 eth_dst=tunnel_nexhop_inner_mac,
                 eth_src=ROUTER_MAC,
-                ip_dst=vm_ip_from_port23_nb,
-                ip_src=port2_nb_ip,
+                ip_dst=vm_ip_from_port22_nb,
+                ip_src=port1_nb_ip,
                 ip_id=108,
                 ip_ttl=63)
 
     expect_ipip_pkt = simple_ipv4ip_packet(
-                eth_dst=port23_nb_mac,
+                eth_dst=port22_nb_mac,
                 eth_src=ROUTER_MAC,
                 ip_id=0,
-                ip_src=router_lpb_ip,
-                ip_dst=port23_nb_ip,
+                ip_src=Router_lpb_ip_pipe,
+                ip_dst=port22_nb_ip,
                 ip_ttl=ttl_val,
                 inner_frame=inner_pkt['IP'])
 Decap packet:
@@ -116,7 +116,7 @@ Decap packet:
     Input_ipip_pkt = simple_ipv4ip_packet(
                 eth_dst=ROUTER_MAC,
                 eth_src=port1_nb_mac,
-                ip_dst=router_lpb_ip,
+                ip_dst=Router_lpb_ip_pipe,
                 ip_src=port22_nb_ip 
                 ip_id=0,
                 ip_ttl=64,
@@ -127,9 +127,10 @@ Decap packet:
 ### Test steps: <!-- omit in toc --> 
 - encap_ttl_set_pipe_mod
 1. Make sure create tunnel_pipe with encap_ttl_val attribute as user defined ttl_val=20, encap_ttl_mode attr with SAI_TUNNEL_TTL_MODE_PIPE_MODEL
-2. Generate input packet with ip_ttl field as 64, expected ipinip packet with ip_ttl field in outer ip header as ttl_val, one in inner ip header as 63.
+2. Generate input packet with ip_ttl field as 64.
 3. Send input packet from port1.
-4. Recieve ipinip packet from port22, compare it with expected ipinip packet.
+4. Create Expected ipinip packet with ip_ttl field in outer ip header as ttl_val,inner ip_ttl as 63.
+5. Recieve ipinip packet from port22, compare it with expected ipinip packet.
 
 - decap_ttl_set_pipe
 1. Make sure create tunnel with decap_ttl_mode attr with SAI_TUNNEL_TTL_MODE_PIPE_MODEL
@@ -172,7 +173,7 @@ Encap packet:
                 eth_dst=port23_nb_mac,
                 eth_src=ROUTER_MAC,
                 ip_id=0,
-                ip_src=router_lpb_ip,
+                ip_src=Router_lpb_ip_uniform,
                 ip_dst=port23_nb_ip,
                 ip_ttl=63,
                 inner_frame=inner_pkt['IP'])
@@ -196,7 +197,7 @@ Decap packet:
     Input_ipip_pkt = simple_ipv4ip_packet(
                 eth_dst=ROUTER_MAC,
                 eth_src=port1_nb_mac,
-                ip_dst=router_lpb_ip,
+                ip_dst=Router_lpb_ip_uniform,
                 ip_src=port22_nb_ip 
                 ip_id=0,
                 ip_ttl=64,
@@ -204,7 +205,6 @@ Decap packet:
 
 ```
 ### Test steps: <!-- omit in toc -->
-- test_disable_egress
 
 - encap_ttl_set_uniform_mode
 1. Make sure create tunnel_uniform with encap_ttl_val attribute as user defined ttl_val=20, 
@@ -253,7 +253,7 @@ Encap packet:
                 eth_dst=port22_nb_mac,
                 eth_src=ROUTER_MAC,
                 ip_id=0,
-                ip_src=router_lpb_ip,
+                ip_src=Router_lpb_ip_pipe,
                 ip_dst=port22_nb_ip,
                 ip_ttl=64,
                 ip_dscp=tunnel_dscp_val,
@@ -278,7 +278,7 @@ Decap packet:
     Input_ipip_pkt = simple_ipv4ip_packet(
                 eth_dst=ROUTER_MAC,
                 eth_src=port1_nb_mac,
-                ip_dst=router_lpb_ip,
+                ip_dst=Router_lpb_ip_pipe,
                 ip_src=port22_nb_ip 
                 ip_id=0,
                 ip_dscp=tunnel_dscp_val,
@@ -289,16 +289,17 @@ Decap packet:
 ### Test steps: <!-- omit in toc --> 
 - encap_dscp_remap_in_pipe_mode:
 1. Make sure create tunnel_pipe with encap_dscp_mode attr as SAI_TUNNEL_DSCP_MODE_PIPE_MODEL, encap_dscp_val attribute as user defined ip_dscp=tunnel_dscp_val
-2. Generate input packet with dscp field as orig_dscp_val, expected ipinip packet with dscp field in outer ip header as tunnel_dscp_val, one in inner ip header as orig_dscp_val.
+2. Generate input packet with dscp field as orig_dscp_val.
 3. Send input packet from port1.
-4. Recieve ipinip packet from port22. Compare it with expected ipinip packet.
+4. Create expected ipinip packet with dscp field in outer ip header as tunnel_dscp_val, inner dscp as orig_dscp_val.
+5. Recieve ipinip packet from port22. Compare it with expected ipinip packet.
 
 
 - decap_dscp_remap_in_pipe_mode:
 1. Make sure create tunnel_pipe with decap_dscp_mode attr as SAI_TUNNEL_DSCP_MODE_PIPE_MODEL
-2. Generate input ipinip packet with dscp field in outer ip header as tunnel_dscp_val, one in inner ip header as inner_dscp_val. 
-3. Generate expect packet with dscp field as inner_dscp_val, 
-4. Send input packet from port22.
+2. Generate input ipinip packet with dscp field in outer ip header as tunnel_dscp_val, inner  dscp as inner_dscp_val. 
+3. Send input packet from port22.
+4. Generate expect packet with dscp field as inner_dscp_val.
 5. Recieve decap packet from port1. Compare it with expected ip packet.
 
 ## Test Group4: DSCP QOS Map in Pipe Mode
