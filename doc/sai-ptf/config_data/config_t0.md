@@ -135,7 +135,7 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 
 ### 2.3.3  Tunnel Route entry
 |Next Hop Name | Dst route IP |Next Hop Type |
-|-|-| - |-|
+|-|-|-|
 |tunnel_pipe_nh|vm_ip_from_lag2_nb: 192.192.1.1| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
 |tunnel_uniform_nh|vm_ip_from_lag3_nb: 192.192.1.2| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
 
@@ -212,7 +212,7 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
      |-|-|-|-|
      |Router_lpb_ip_uniform_v4|lag3_nb:10.0.3.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
 
-  4. Create tunnel tpe nexhop called tunnel_pipe_nh 
+  4. Create tunnel type nexhop called tunnel_pipe_nh 
      |type|IP|MAC_NAME|MAC|
      |-|-|-|-|
      |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|lag3_nb:10.0.3.101| tunnel_nexhop_inner_mac_uniform|04:04:04:01:04:01|
