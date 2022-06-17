@@ -21,7 +21,7 @@
     - [Case11: decap_dscp_in_pipe_mode_v4](#case11-decap_dscp_in_pipe_mode_v4)
     - [Case12: decap_dscp_in_pipe_mode_v6](#case12-decap_dscp_in_pipe_mode_v6)
     - [Testing Data Packet](#testing-data-packet-2)
-  - [Test Group4: DSCP QOS Map in Pipe Mode](#test-group4-dscp-qos-map-in-pipe-mode)
+  - [Test Group4: DSCP QoS Map in Pipe Mode](#test-group4-dscp-qos-map-in-pipe-mode)
     - [Case13: encap_dscp_remap_in_pipe_mode_v4](#case13-encap_dscp_remap_in_pipe_mode_v4)
     - [Case14: encap_dscp_remap_in_pipe_mode_v6](#case14-encap_dscp_remap_in_pipe_mode_v6)
     - [Case15: decap_dscp_remap_in_pipe_mode_v4](#case15-decap_dscp_remap_in_pipe_mode_v4)
@@ -66,7 +66,7 @@ For the test configuration, please refer to Tunnel configuration section of the 
 
 
 ### Testing Objective <!-- omit in toc --> 
-This verifies if TTL field is user-defined for outer header on encapsulation and TTL field of inner header remains the same on decapsulation when using TTL pipe mode.
+This verifies if TTL field is user-defined for the outer header on encapsulation and TTL field of the inner header remains the same on decapsulation when using TTL pipe mode.
 
 ### Testing Data Packet
 ```Python
@@ -128,14 +128,14 @@ Decap packet:
 1. Make sure create tunnel_pipe with encap_ttl_val attribute as user defined ttl_val=20, encap_ttl_mode attr with SAI_TUNNEL_TTL_MODE_PIPE_MODEL
 2. Generate input packet with ip_ttl field as 64.
 3. Send input packet from port1.
-4. Create Expected ipinip packet with ip_ttl field in outer ip header as ttl_val,inner ip_ttl as 63.
-5. Recieve ipinip packet from port22, compare it with expected ipinip packet.
+4. Create Expected ipinip packet with ip_ttl field in the outer IP header as ttl_val, inner ip_ttl as 63.
+5. Recieve ipinip packet from port22, and compare it with the expected ipinip packet.
 
 - decap_ttl_set_pipe
-1. Make sure create tunnel with decap_ttl_mode attr with SAI_TUNNEL_TTL_MODE_PIPE_MODEL
-2. Generate input ipinip packet with ip_ttl field in outer ip header as 64 , one in inner ip header as 51, expected recieved packet with ip_ttl field as 50.
+1. Make sure to create a tunnel with decap_ttl_mode attr with SAI_TUNNEL_TTL_MODE_PIPE_MODEL
+2. Generate input ipinip packet with ip_ttl field in the outer IP header as 64, and one in the inner IP header as 51.
 3. Send packet from port22.
-4. Recieve ipinip packet from port1, compare it with expected packet.
+4. Recieve ipinip packet from port1, compare it with the expected packet, expected received packet with ip_ttl field as 50.
 
 ## Test Group2: TTL Uniform Mode
 
@@ -206,18 +206,18 @@ Decap packet:
 ### Test steps: <!-- omit in toc -->
 
 - encap_ttl_set_uniform_mode
-1. Make sure create tunnel_uniform with encap_ttl_val attribute as user defined ttl_val=20, 
-2. Generate input  packet with ip_ttl field as 64.
+1. Make sure create tunnel_uniform with encap_ttl_val attribute as user-defined ttl_val=20, 
+2. Generate input packet with ip_ttl field as 64.
 3. Send input packet from port2.
-4. Create expected ipinip packet with ip_ttl field for outer ip header as 63,  inner ip_ttl as 63.
+4. Create expected ipinip packet with ip_ttl field for outer IP header as 63,  inner ip_ttl as 63.
 5. Recieve ipinip packet from lag3 port, compare it with expected ipinip packet.
 
 - decap_ttl_set_uniform_mode
-1. Make sure create tunnel with  decap_ttl_mode attr with SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL
-2. Generate input ipinip packet with ip_ttl field in outer ip header as 64 , inner ip_ttl as 50.
+1. Make sure to create a tunnel with  decap_ttl_mode attr with SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL
+2. Generate input ipinip packet with ip_ttl field in the outer IP header as 64, inner ip_ttl as 50.
 3. Send packet from lag3 port.
-4. Create expected recieved packet with ip_ttl field as 63.
-5. Recieve ipinip packet from port2, compare it with expected packet.
+4. Create the expected received packet with the ip_ttl field as 63.
+5. Recieve ipinip packet from port2, and compare it with the expected packet.
 
 ## Test Group3: DSCP in Pipe Mode
 	
@@ -227,7 +227,7 @@ Decap packet:
 ### Case12: decap_dscp_in_pipe_mode_v6
 
 ### Testing Objective <!-- omit in toc --> 
-This verifies if DSCP field is user-defined for outer header on encapsulation and DSCP field of inner header remains the same on decapsulation when using DSCP pipe mode.
+This verifies if the DSCP field is user-defined for the outer header on encapsulation and the DSCP field of the inner header remains the same on decapsulation when using DSCP pipe mode.
 ### Testing Data Packet 
 
 ```Python
@@ -290,20 +290,20 @@ Decap packet:
 ### Test steps: <!-- omit in toc --> 
 - encap_dscp_remap_in_pipe_mode:
 1. Make sure create tunnel_pipe with encap_dscp_mode attr as SAI_TUNNEL_DSCP_MODE_PIPE_MODEL, encap_dscp_val attribute as user defined ip_dscp=tunnel_dscp_val
-2. Generate input packet with dscp field as orig_dscp_val.
+2. Generate input packet with DSCP field as orig_dscp_val.
 3. Send input packet from port1.
-4. Create expected ipinip packet with dscp field in outer ip header as tunnel_dscp_val, inner dscp as orig_dscp_val.
-5. Recieve ipinip packet from lag2 port. Compare it with expected ipinip packet.
+4. Create expected ipinip packet with dscp field in the outer IP header as tunnel_dscp_val, inner dscp as orig_dscp_val.
+5. Recieve ipinip packet from lag2 port. Compare it with the expected ipinip packet.
 
 
 - decap_dscp_remap_in_pipe_mode:
-1. Make sure create tunnel_pipe with decap_dscp_mode attr as SAI_TUNNEL_DSCP_MODE_PIPE_MODEL
-2. Generate input ipinip packet with dscp field in outer ip header as tunnel_dscp_val, inner  dscp as inner_dscp_val. 
+1. Make sure to create tunnel_pipe with decap_dscp_mode attr as SAI_TUNNEL_DSCP_MODE_PIPE_MODEL
+2. Generate input ipinip packet with dscp field in the outer IP header as tunnel_dscp_val, inner dscp as inner_dscp_val. 
 3. Send input packet from lag2 port.
 4. Generate expect packet with dscp field as inner_dscp_val.
-5. Recieve decap packet from port1. Compare it with expected ip packet.
+5. Recieve decap packet from port1. Compare it with the expected IP packet.
 
-## Test Group4: DSCP QOS Map in Pipe Mode
+## Test Group4: DSCP QoS Map in Pipe Mode
 	
 ### Case13: encap_dscp_remap_in_pipe_mode_v4
 ### Case14: encap_dscp_remap_in_pipe_mode_v6
@@ -311,7 +311,7 @@ Decap packet:
 ### Case16: decap_dscp_remap_in_pipe_mode_v6
 
 ### Testing Objective <!-- omit in toc --> 
-This verifies if DSCP field is user-defined for outer header on encapsulation and DSCP field of inner header remains the same on decapsulation when using DSCP pipe mode.
+This verifies if the DSCP field is user-defined for the outer header on encapsulation and the DSCP field of the inner header remains the same on decapsulation when using DSCP pipe mode.
 ### Testing Data Packet 
 
 ```Python
@@ -387,10 +387,10 @@ Decap packet:
 - decap_dscp_remap_in_pipe_mode:
 1. Make sure create tunnel_pipe with decap_dscp_mode attr as SAI_TUNNEL_DSCP_MODE_PIPE_MODEL, attribute as user defined ip_dscp=tunnel_dscp_val
 2. Bind port22 with dscp_to_tc_map (orig_dscp_val => tc_map), Bind lag2 port with tc_to_dscp_map(tc_map => rewrite_dscp_val).
-3. Generate input ipinip packet with dscp field in outer ip header as tunnel_dscp_val, one in inner ip header as orig_dscp_val. 
+3. Generate input ipinip packet with dscp field in the outer IP header as tunnel_dscp_val, one in the inner IP header as orig_dscp_val. 
 4. Send input packet from lag2 port.
 5. Generate expect packet with dscp field as rewrite_dscp_val.
-6. Recieve decap packet from port1. Compare it with expected ip packet.
+6. Recieve decap packet from port1. Compare it with the expected IP packet.
 7. Remove  dscp_to_tc_map and tc_to_dscp_map.
 
 ## Test Group5: DSCP in Uniform Mode 
@@ -469,11 +469,11 @@ Decap packet:
 
 
 - decap_dscp_remap_in_unifrom_mode:
-1. Make sure create tunnel_pipe with decap_dscp_mode attr as SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
-2. Generate input ipinip packet with dscp field in outer ip header as tunnel_dscp_val, one in inner ip header as orig_dscp_val. 
+1. Make sure to create tunnel_pipe with decap_dscp_mode attr as SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
+2. Generate input ipinip packet with dscp field in the outer IP header as tunnel_dscp_val, one in the inner IP header as orig_dscp_val. 
 3. Send input packet from lag3 port.
 4. Generate expect packet with dscp field as tunnel_dscp_val.
-5. Recieve decap packet from port2. Compare it with expected ip packet.
+5. Recieve decap packet from port2. Compare it with the expected IP packet.
 
 
 ## Test Group6: DSCP QOS Map in Uniform Mode
@@ -484,7 +484,7 @@ Decap packet:
 ### Case24: decap_dscp_remap_in_Uniform_mode_v6
 
 ### Testing Objective <!-- omit in toc --> 
-This verifies the DSCP field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation, combining with qos map.
+This verifies the DSCP field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation, combining with QoS map.
 
 ### Testing Data Packet 
 
@@ -553,16 +553,16 @@ Decap packet:
 6. Remove  dscp_to_tc_map and tc_to_dscp_map.
 
 - decap_dscp_remap_in_unifrom_mode:
-1. Make sure create tunnel_uniform with decap_dscp_mode attr as SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
+1. Make sure to create tunnel_uniform with decap_dscp_mode attr as SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL
 2. Bind lag3 port with dscp_to_tc_map (tunnel_dscp_val => tc_map), Bind port2 with tc_to_dscp_map(tc_map => rewrite_dscp_val).
-3. Generate input ipinip packet with dscp field in outer ip header as tunnel_dscp_val, one in inner ip header as orig_dscp_val. 
+3. Generate input ipinip packet with dscp field in the outer IP header as tunnel_dscp_val, one in the inner IP header as orig_dscp_val. 
 4. Send input packet from lag3 port.
 5. Create expect packet with dscp field as rewrite_dscp_val.
-6. Recieve decap packet from lag3 port. Compare it with expected ip packet.
+6. Recieve decap packet from lag3 port. Compare it with the expected IP packet.
 7. Remove  dscp_to_tc_map and tc_to_dscp_map.
 
 ## Test Group7: Test tunnel termination
-The test group choose tunnel_uniform tunnel. 
+The test group chooses tunnel_uniform tunnel. 
 
 ### case25:test_tunnel_term_with_correct_Dst_ip
 ### case26:test_tunnel_term_with_error_Dst_ip
@@ -602,7 +602,7 @@ SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP are de-encapsulated
 - test_tunnel_term_with_correct_Dst_ip:
  1. set test_outer_dst_ip_val as Router_lpb_ip_uniform, then generate input ipinip packet with ip_dst field for outer header as test_outer_dst_ip_val
  2. Send input packet from lag3 port.
- 3. Verify if we can recieve decap packet from port2. Compare it with expected expect packet.
+ 3. Verify if we can receive decap packet from port2. Compare it with the expected expect packet.
 - test_tunnel_term_with_error_Dst_ip:
  1. set test_outer_dst_ip_val as a diffenrent value with Router_lpb_ip_uniform, then generate input ipinip packet with ip_dst field for outer header as test_outer_dst_ip_val
  2. Send input packet from lag3 port.
