@@ -14,36 +14,35 @@
     - [Case6: encap_ttl_set_uniform_mode_v6](#case6-encap_ttl_set_uniform_mode_v6)
     - [Case7: decap_ttl_set_uniform_mode_v4](#case7-decap_ttl_set_uniform_mode_v4)
     - [Case8: decap_ttl_set_uniform_mode_v6](#case8-decap_ttl_set_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-1)
   - [Test Group3: DSCP in Pipe Mode](#test-group3-dscp-in-pipe-mode)
     - [Case9: encap_dscp_in_pipe_mode_v4](#case9-encap_dscp_in_pipe_mode_v4)
     - [Case10: encap_dscp_in_pipe_mode_v6](#case10-encap_dscp_in_pipe_mode_v6)
     - [Case11: decap_dscp_in_pipe_mode_v4](#case11-decap_dscp_in_pipe_mode_v4)
     - [Case12: decap_dscp_in_pipe_mode_v6](#case12-decap_dscp_in_pipe_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-2)
   - [Test Group4: DSCP QoS Map in Pipe Mode](#test-group4-dscp-qos-map-in-pipe-mode)
     - [Case13: encap_dscp_remap_in_pipe_mode_v4](#case13-encap_dscp_remap_in_pipe_mode_v4)
     - [Case14: encap_dscp_remap_in_pipe_mode_v6](#case14-encap_dscp_remap_in_pipe_mode_v6)
     - [Case15: decap_dscp_remap_in_pipe_mode_v4](#case15-decap_dscp_remap_in_pipe_mode_v4)
     - [Case16: decap_dscp_remap_in_pipe_mode_v6](#case16-decap_dscp_remap_in_pipe_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-3)
   - [Test Group5: DSCP in Uniform Mode](#test-group5-dscp-in-uniform-mode)
     - [Case17: encap_dscp_remap_in_Uniform_mode_v4](#case17-encap_dscp_remap_in_uniform_mode_v4)
     - [Case18: encap_dscp_remap_in_Uniform_mode_v6](#case18-encap_dscp_remap_in_uniform_mode_v6)
     - [Case19: decap_dscp_remap_in_Uniform_mode_v4](#case19-decap_dscp_remap_in_uniform_mode_v4)
     - [Case20: decap_dscp_remap_in_Uniform_mode_v6](#case20-decap_dscp_remap_in_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-4)
   - [Test Group6: DSCP QOS Map in Uniform Mode](#test-group6-dscp-qos-map-in-uniform-mode)
     - [Case21: encap_dscp_remap_in_Uniform_mode_v4](#case21-encap_dscp_remap_in_uniform_mode_v4)
     - [Case22: encap_dscp_remap_in_Uniform_mode_v6](#case22-encap_dscp_remap_in_uniform_mode_v6)
     - [Case23: decap_dscp_remap_in_Uniform_mode_v4](#case23-decap_dscp_remap_in_uniform_mode_v4)
     - [Case24: decap_dscp_remap_in_Uniform_mode_v6](#case24-decap_dscp_remap_in_uniform_mode_v6)
-    - [Testing Data Packet](#testing-data-packet-5)
   - [Test Group7: Test tunnel termination](#test-group7-test-tunnel-termination)
     - [case25:test_tunnel_term_with_correct_Dst_ip](#case25test_tunnel_term_with_correct_dst_ip)
     - [case26:test_tunnel_term_with_error_Dst_ip](#case26test_tunnel_term_with_error_dst_ip)
-    - [Testing Data Packet](#testing-data-packet-6)
-  - [To Do:Verify tunnel + ECMP](#to-doverify-tunnel--ecmp)
+  - [Todo Test Group7: IPinIP P2MP](#todo-test-group7-ipinip-p2mp)
+    - [Case27: test_p2mp_decap_v4](#case27-test_p2mp_decap_v4)
+    - [Case27: test_p2mp_encap_v4](#case27-test_p2mp_encap_v4)
+    - [Case27: test_p2mp_decap_v6](#case27-test_p2mp_decap_v6)
+    - [Case27: test_p2mp_encap_v6](#case27-test_p2mp_encap_v6)
+  - [To Do Verify tunnel + ECMP](#to-do-verify-tunnel--ecmp)
 # Overriew
 The purpose of this test plan is to test the Tunnel function from SAI.
 
@@ -148,7 +147,7 @@ Decap packet:
 This verifies the TTL field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation,
 even if we set tunnel encap_ttl_val attribute.
 
-### Testing Data Packet 
+### Testing Data Packet <!-- omit in toc -->
 
 ```Python
 Encap packet:
@@ -228,7 +227,7 @@ Decap packet:
 
 ### Testing Objective <!-- omit in toc --> 
 This verifies if the DSCP field is user-defined for the outer header on encapsulation and the DSCP field of the inner header remains the same on decapsulation when using DSCP pipe mode.
-### Testing Data Packet 
+### Testing Data Packet <!-- omit in toc -->
 
 ```Python
 Encap packet:
@@ -312,7 +311,7 @@ Decap packet:
 
 ### Testing Objective <!-- omit in toc --> 
 This verifies if the DSCP field is user-defined for the outer header on encapsulation and the DSCP field of the inner header remains the same on decapsulation when using DSCP pipe mode.
-### Testing Data Packet 
+### Testing Data Packet <!-- omit in toc -->
 
 ```Python
 Encap packet:
@@ -403,7 +402,7 @@ Decap packet:
 ### Testing Objective <!-- omit in toc --> 
 This verifies the DSCP field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation
 
-### Testing Data Packet 
+### Testing Data Packet <!-- omit in toc -->
 
 ```Python
 Encap packet:
@@ -486,7 +485,7 @@ Decap packet:
 ### Testing Objective <!-- omit in toc --> 
 This verifies the DSCP field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation, combining with QoS map.
 
-### Testing Data Packet 
+### Testing Data Packet <!-- omit in toc -->
 
 ```Python
 Encap packet:
@@ -570,7 +569,7 @@ The test group chooses tunnel_uniform tunnel.
  This verifies if only tunneled packets with destination IP set as
 SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP are de-encapsulated
 
-### Testing Data Packet 
+### Testing Data Packet  <!-- omit in toc --> 
 
 ```Python
 
@@ -608,4 +607,13 @@ SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP are de-encapsulated
  2. Send input packet from lag3 port.
  3. Verify if packet drop on port2.
 
-## To Do:Verify tunnel + ECMP
+
+## Todo Test Group7: IPinIP P2MP
+### Case27: test_p2mp_decap_v4
+### Case27: test_p2mp_encap_v4
+### Case27: test_p2mp_decap_v6
+### Case27: test_p2mp_encap_v6
+
+### Testing Data Packet  <!-- omit in toc -->
+
+## To Do Verify tunnel + ECMP
