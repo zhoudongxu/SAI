@@ -13,12 +13,17 @@
   - [2.3 Route Configuration](#23-route-configuration)
     - [2.3.1 VLAN interfaces route entries](#231-vlan-interfaces-route-entries)
     - [2.3.2 LAG Route entry](#232-lag-route-entry)
-    - [2.3.3  Tunnel Route entry](#233-tunnel-route-entry)
+    - [2.3.3  Tunnel Route entry](#233--tunnel-route-entry)
   - [2.4 Neighbor Configuration](#24-neighbor-configuration)
     - [2.4.1 VLAN Neighbors](#241-vlan-neighbors)
     - [2.4.2 LAG Neighbors](#242-lag-neighbors)
     - [2.4.3 Tunnel Neighbors](#243-tunnel-neighbors)
-  - [2.5 Tunnel Configuration](#25-tunnel-configuration)
+  - [2.5 Next Hops](#25-next-hops)
+    - [2.5.1 Tunnel Next hop](#251-tunnel-next-hop)
+  - [2.6 Tunnel Configuration](#26-tunnel-configuration)
+    - [2.6.1 Tunnel loopback:](#261-tunnel-loopback)
+    - [2.6.2 Tunnel](#262-tunnel)
+    - [2.6.3 Tunnel Term](#263-tunnel-term)
 # Overriew
 This document describes the sample configuration data.
 
@@ -135,7 +140,7 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 
 ### 2.3.3  Tunnel Route entry
 |Next Hop Name | Dst route IP |Next Hop Type |
-|-|-|-|
+|-|-| - |-|
 |tunnel_pipe_nh|vm_ip_from_lag2_nb: 192.192.1.1| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
 |tunnel_uniform_nh|vm_ip_from_lag3_nb: 192.192.1.2| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
 
@@ -160,61 +165,64 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 |-|-|-|-|
 |lag2_nb|lag2| 10.0.2.101 | 03:04:03:01:03:01|
 |lag3_nb|lag3| 10.0.3.101 | 04:04:04:01:04:01|
+|lag2_remote_nb|lag2| 192.168.20.1-192.168.20.99| 03:04:03:99:30:01-03:04:03:99:30:99|
+|lag3_remote_nb|lag3| 192.168.30.1-192.168.30.99 | 04:04:04:99:40:01-03:04:03:99:40:99|
 
 
-## 2.5 Tunnel Configuration
-- Config t0 loopback:
+## 2.5 Next Hops
+### 2.5.1 Tunnel Next hop
+
+|name|Mode|type|IP|MAC_NAME|MAC|
+|-|-|-|-|-|-|
+|tunnel_uniform_nh|Uniform|SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|lag3_nb:10.0.3.101|inner_mac_uniform|04:04:04:01:04:01|
+|tunnel_pipe_nh|pipe|SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|lag2_nb:10.0.2.101|inner_mac_pip| 03:04:03:01:03:01|
+
+## 2.6 Tunnel Configuration
+### 2.6.1 Tunnel loopback:
  
-     |Name|IP|
-     |-|-|
-     |Router_lpb_ip_pipe_v4| 10.10.10.1|
-     |Router_lpb_ip_uniform_v4| 10.10.10.2|
-     |Router_lpb_ip_pipe_v6| 2001:0db8::10:1|
-     |Router_lpb_ip_uniform_v6| 2001:0db8::10:2|
+|Name|IP|
+|-|-|
+|Router_lpb_ip_pipe_v4| 10.10.10.1|
+|Router_lpb_ip_uniform_v4| 10.10.10.2|
+|Router_lpb_ip_pipe_v6| 2001:0db8::10:1|
+|Router_lpb_ip_uniform_v6| 2001:0db8::10:2|
 
 
-- Tunnel_pipe:
-  1. Create overlay virtual router and loopback interface, underlay virtual router  and loopback interface, pass them when creating tunnel.
-  2. Create tunnel_pipe with these attributes below,
-     |Attribute Name|Value|
-     |-|-|
-     |encap_ttl_mode|SAI_TUNNEL_TTL_MODE_PIPE_MODEL| 
-     |encap_ttl_val|ttl_val| 
-     |decap_ttl_mode|SAI_TUNNEL_TTL_MODE_PIPE_MODEL| 
-     |encap_dscp_mode|SAI_TUNNEL_DSCP_MODE_PIPE_MODEL| 
-     |encap_dscp_vale|tunnnel_dscp_val| 
-     |decap_dscp_mode|SAI_TUNNEL_DSCP_MODE_PIPE_MODEL| 
+### 2.6.2 Tunnel
 
-  3. Create tunnel term table entry with attribute    
-     |type|dst_ip|src_ip|type|
-     |-|-|-|-|
-     |Router_lpb_ip_pipe_v4|lag2_nb:10.0.2.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
-  4. Create tunnel type nexhop called tunnel_pipe_nh with type 
-     |type|IP|MAC_NAME|MAC|
-     |-|-|-|-|
-     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|lag2_nb:10.0.2.101| tunnel_nexhop_inner_mac_uniform| 03:04:03:01:03:01|
+|Name|Mode|underlay_interface|overlay_interface|
+|-|-|-|-|
+|pipe_tunnel|pipe|Router_lpb_ip_pipe_v4/v6||
+|uniform_tunnel|uniform|Router_lpb_ip_uniform_v4/v6||
 
-     then using tunnel_pipe_nh to create route entry, pls refer to 2.3.3 section
+- Tunnel_pipe_attr:
+
+Create tunnel_pipe with these attributes below,
+
+|Attribute Name|Value|
+|-|-|
+|encap_ttl_mode|SAI_TUNNEL_TTL_MODE_PIPE_MODEL| 
+|encap_ttl_val|ttl_val| 
+|decap_ttl_mode|SAI_TUNNEL_TTL_MODE_PIPE_MODEL| 
+|encap_dscp_mode|SAI_TUNNEL_DSCP_MODE_PIPE_MODEL| 
+|encap_dscp_vale|tunnnel_dscp_val| 
+|decap_dscp_mode|SAI_TUNNEL_DSCP_MODE_PIPE_MODEL| 
+
+- Tunnel_uniform_attr:
+
+Create tunnel_Uniform with these attributes below,
+
+|Attribute Name|Value|
+|-|-|
+|encap_ttl_mode|SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL| 
+|decap_ttl_mode|SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL| 
+|encap_dscp_mode|SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL| 
+|decap_dscp_mode|SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL|
 
 
-- Tunnel_uniform:
-  1. Create overlay virtual router and loopback interface, underlay virtual router  and loopback interface, pass them when creating tunnel.
-  2. Create tunnel_Uniform with these attributes below,
-     |Attribute Name|Value|
-     |-|-|
-     |encap_ttl_mode|SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL| 
-     |decap_ttl_mode|SAI_TUNNEL_TTL_MODE_UNIFORM_MODEL| 
-     |encap_dscp_mode|SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL| 
-     |decap_dscp_mode|SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL| 
+### 2.6.3 Tunnel Term
 
-  3. Create tunnel term table entry with attribute 
-     |type|dst_ip|src_ip|type|
-     |-|-|-|-|
-     |Router_lpb_ip_uniform_v4|lag3_nb:10.0.3.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
-
-  4. Create tunnel type nexhop called tunnel_pipe_nh 
-     |type|IP|MAC_NAME|MAC|
-     |-|-|-|-|
-     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|lag3_nb:10.0.3.101| tunnel_nexhop_inner_mac_uniform|04:04:04:01:04:01|
-
-     then using tunnel_uniform_nh to create route entry, pls refer to 2.3.3 section
+|name|tunnel|dst_ip|src_ip|type|
+|-|-|-|-|-|
+|Router_lpb_ip_pipe_v4|pipe_tunnel|10.10.10.1|10.0.2.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
+|Router_lpb_ip_uniform_v4|uniform_tunnel|10.10.10.2|10.0.3.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
