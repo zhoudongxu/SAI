@@ -57,7 +57,7 @@ Format: ROLE.NUM.GROUP_ID.SEQ
 
 - ROLE_NUM
 T0: 10.0.0.0
-T1: 10.0.0.0
+T1: 10.1.0.0
 Server: 192.168.0.0
 
 For example
@@ -134,15 +134,16 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 
 |LAG ID | route IP | Type | VALUE|
 |-|-| - |-|
-|1| 10.0.1.100/31 | Direct Connect||
-|2| 10.0.2.100/31 | Direct Connect||
+|1| 10.1.1.100/31 | Direct Connect||
+|2| 10.1.2.100/31 | Direct Connect||
+|3| 10.1.3.100/31 | Direct Connect||
 |1| 192.168.10.1-192.168.10.100| NH|lag1_nb|
 
 ### 2.3.3  Tunnel Route entry
-|Next Hop Name | Dst route IP |Next Hop Type |
+|Next Hop Name | Dst route IP |Port|Next Hop Type |
 |-|-| - |-|
-|tunnel_pipe_nh|vm_ip_from_lag2_nb: 192.192.1.1| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
-|tunnel_uniform_nh|vm_ip_from_lag3_nb: 192.192.1.2| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
+|tunnel_pipe_nh|remote_pipe_vm|Lag2|SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
+|tunnel_uniform_nh|remote_uniform_vm|Lag3| SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|
 
 ## 2.4 Neighbor Configuration
 ### 2.4.1 VLAN Neighbors
@@ -163,10 +164,10 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 
 |Name|Port|IP|dest_mac|
 |-|-|-|-|
-|lag2_nb|lag2| 10.0.2.101 | 03:04:03:01:03:01|
-|lag3_nb|lag3| 10.0.3.101 | 04:04:04:01:04:01|
-|lag2_remote_nb|lag2| 192.168.20.1-192.168.20.99| 03:04:03:99:30:01-03:04:03:99:30:99|
-|lag3_remote_nb|lag3| 192.168.30.1-192.168.30.99 | 04:04:04:99:40:01-03:04:03:99:40:99|
+|lag2_nb|lag2| 10.1.2.101 | 03:04:03:01:03:01|
+|lag3_nb|lag3| 10.1.3.101 | 04:04:04:01:04:01|
+|remote_pipe_vm|lag2| 192.168.20.1-192.168.20.99| |
+|remote_uniform_vm|lag3| 192.168.30.1-192.168.30.99| |
 
 
 ## 2.5 Next Hops
@@ -182,8 +183,8 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
  
 |Name|IP|
 |-|-|
-|Router_lpb_ip_pipe_v4| 10.10.10.1|
-|Router_lpb_ip_uniform_v4| 10.10.10.2|
+|Router_lpb_ip_pipe_v4| 10.0.10.1|
+|Router_lpb_ip_uniform_v4| 10.0.10.2|
 |Router_lpb_ip_pipe_v6| 2001:0db8::10:1|
 |Router_lpb_ip_uniform_v6| 2001:0db8::10:2|
 
@@ -224,5 +225,5 @@ Create tunnel_Uniform with these attributes below,
 
 |name|tunnel|dst_ip|src_ip|type|
 |-|-|-|-|-|
-|Router_lpb_ip_pipe_v4|pipe_tunnel|10.10.10.1|10.0.2.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
-|Router_lpb_ip_uniform_v4|uniform_tunnel|10.10.10.2|10.0.3.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
+|Router_lpb_ip_pipe_v4|pipe_tunnel|10.0.10.1|10.0.2.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
+|Router_lpb_ip_uniform_v4|uniform_tunnel|10.0.10.2|10.0.3.101| SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P|
