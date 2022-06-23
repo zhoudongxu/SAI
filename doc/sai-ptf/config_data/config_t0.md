@@ -3,7 +3,7 @@
 - [IP and MAC naming convention](#ip-and-mac-naming-convention)
   - [MAC](#mac)
   - [IP v4](#ip-v4)
-  - [IP v4](#ip-v4-1)
+  - [IP v6](#ip-v6)
 - [1. L2 Configurations](#1-l2-configurations)
   - [1.1 FDB Configuration](#11-fdb-configuration)
   - [1.2 VLAN configuration](#12-vlan-configuration)
