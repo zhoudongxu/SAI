@@ -59,13 +59,15 @@ For IP addresses, we will use different prefix for different role
 Format: ROLE.NUM.GROUP_ID.SEQ
 
 - ROLE_NUM
-T0: 10.0.0.0
-T0 ECMP: 10.0.50.0
-T1: 10.1.0.0
-T1 ECMP: 10.1.50.0
-Server: 192.168.0.0
-Server ECMP: 192.168.50.0
-Server Remote:192.168.10.0
+   ```
+   T0: 10.0.0.0
+   T0 ECMP: 10.0.50.0
+   T1: 10.1.0.0
+   T1 ECMP: 10.1.50.0
+   Server: 192.168.0.0
+   Server ECMP: 192.168.50.0
+   Server Remote:192.168.10.0
+   ```
 
 For example
 ```
@@ -77,20 +79,21 @@ For example
 192.168.2.1~ 192.168.2.8
 ```
 
-## IP v4
+## IP v6
 For IP addresses, we will use different prefix for different role
 
 Format: ROLE.NUM.GROUP_ID.SEQ
 
 - ROLE_NUM
-T0: fc00:0::
-T0 ECMP: fc00:0:50::
-T1: fc00:1::
-T1 ECMP: fc00:1:50::
-Server: fc02::
-Server ECMP: fc02:50::
-Server Remote:fc02:10::
-
+   ```
+   T0: fc00:0::
+   T0 ECMP: fc00:0:50::
+   T1: fc00:1::
+   T1 ECMP: fc00:1:50::
+   Server: fc02::
+   Server ECMP: fc02:50::
+   Server Remote:fc02:10::
+   ```
 
 
 
