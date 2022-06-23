@@ -164,7 +164,9 @@ Host interface IP
 |IPv4|IPv6|Port|No_host_route|dest_mac|
 |-|-|-|-|-|
 |192.168.1.100|fc02::1:100|SVI:VLAN10|No|00:01:01:99:01:a0|
+|192.168.1.255|ff02::1|SVI:VLAN10|No|ff:ff:ff:ff:ff:ff|
 |192.168.2.100|fc02::1:100|SVI:VLAN20|No|00:01:01:99:02:a0|
+|192.168.2.255|ff02::1|SVI:VLAN20|No|ff:ff:ff:ff:ff:ff|
 |10.1.1.100|fc00:1::1:100|LAG:lag1|No|00:01:01:01:01:a0|
 |10.1.2.100|fc00:1::2:100|LAG:lag2|No|00:01:01:01:02:a0|
 |10.1.3.100|fc00:1::3:100|LAG:lag3|No|00:01:01:01:03:a0|
