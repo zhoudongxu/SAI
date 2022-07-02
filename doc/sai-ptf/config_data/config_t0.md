@@ -95,6 +95,7 @@ The MAC Table for VLAN L2 forwarding as below
 |-|-|-|-|-|
 |mac0|00:01:01:99:00:00|Port0||Ethernet0|
 |mac1-8  |00:01:01:99:01:01 - 00:01:01:99:01:08|Port1-8|10|Ethernet4-Ethernet32|
+|mac1-8  |00:01:01:99:01:91 - 00:01:01:99:01:98|Port1-8|10|Ethernet4-Ethernet32|
 |mac9-16 |00:01:01:99:02:09 - 00:01:01:99:02:16|Port9-16|20|Ethernet36-Ethernet64|
 
 ## 1.2 VLAN configuration
