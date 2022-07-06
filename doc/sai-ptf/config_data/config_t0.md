@@ -16,6 +16,9 @@
 - [3 LAG configuration](#3-lag-configuration)
   - [3.1 LAG Hash Rule](#31-lag-hash-rule)
 - [4. Tunnel Configuration](#4-tunnel-configuration)
+- [5. Tunnel QoS remapping (pcbb)](#5-tunnel-qos-remapping-pcbb)
+  - [Port TC MAP](#port-tc-map)
+  - [Tunnel TC MAP](#tunnel-tc-map)
 # Overriew
 This document describes the sample configuration data.
 
@@ -256,3 +259,33 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
      |-|-|-|
      |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|10.1.3.101| 03:03:03:01:03:01|
 
+# 5. Tunnel QoS remapping (pcbb)
+## Port TC MAP 
+|TC Value|DSCP Value|PRIORITY_GROUP Value|QUEUE Value|Income DSCP|
+|-|-|-|-|-|
+|0||0|0|8|
+|1||0|1|1|
+|2||2|2|2|
+|3||3|3|3|
+|4||4|4|4|
+|5||0|5|46|
+|6||6|6|6|
+|7||7|7|48|
+|8||0||33|
+
+**p.s. For income dscp, there should be a DSCP to TC map for them.**
+
+## Tunnel TC MAP 
+|TC Value|DSCP Value|PRIORITY_GROUP Value|QUEUE Value|Income DSCP|
+|-|-|-|-|-|
+|0|8|0|0|8|
+|1|0|0|1|1|
+|2|0|0|1||
+|3|2|2|2|3|
+|4|6|6|6|4|
+|5|46|0|5|46|
+|6|0|0|1||
+|7|48|0|7|48|
+|8|33|0|0|33|
+
+**p.s. For income dscp, there should be a DSCP to TC map for them.**
