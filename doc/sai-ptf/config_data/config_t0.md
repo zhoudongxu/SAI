@@ -264,7 +264,7 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 |TC Value|DSCP Value|PRIORITY_GROUP Value|QUEUE Value|Income DSCP|
 |-|-|-|-|-|
 |0||0|0|8|
-|1||0|1|1|
+|1||0|1|0|
 |2||2|2|2|
 |3||3|3|3|
 |4||4|4|4|
@@ -279,7 +279,7 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 |TC Value|DSCP Value|PRIORITY_GROUP Value|QUEUE Value|Income DSCP|
 |-|-|-|-|-|
 |0|8|0|0|8|
-|1|0|0|1|1|
+|1|0|0|1|0|
 |2|0|0|1||
 |3|2|2|2|3|
 |4|6|6|6|4|
