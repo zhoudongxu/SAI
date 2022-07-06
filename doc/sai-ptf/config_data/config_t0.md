@@ -261,7 +261,7 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 
 # 5. Tunnel QoS remapping (pcbb)
 ## Port TC MAP 
-|TC Value|DSCP Value|PRIORITY_GROUP Value|QUEUE Value|Income DSCP|
+|TC Value|DSCP Value|PRIORITY_GROUP Value|QUEUE Value|DSCP (Source)|
 |-|-|-|-|-|
 |0||0|0|8|
 |1||0|1|0|
@@ -273,19 +273,19 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 |7||7|7|48|
 |8||0||33|
 
-**p.s. For income dscp, there should be a DSCP to TC map for them.**
+**p.s. For DSCP (Source), there should be a DSCP to TC map for them.**
 
 ## Tunnel TC MAP 
-|TC Value|DSCP Value|PRIORITY_GROUP Value|QUEUE Value|Income DSCP|
+|TC Value|DSCP Value|PRIORITY_GROUP Value|QUEUE Value|DSCP (Source)|
 |-|-|-|-|-|
 |0|8|0|0|8|
 |1|0|0|1|0|
-|2|0|0|1||
+|2|0|0|1|1|
 |3|2|2|2|3|
 |4|6|6|6|4|
 |5|46|0|5|46|
 |6|0|0|1||
 |7|48|0|7|48|
-|8|33|0|0|33|
+|8|33|0|1|33|
 
-**p.s. For income dscp, there should be a DSCP to TC map for them.**
+**p.s. For DSCP (Source), there should be a DSCP to TC map for them.**
