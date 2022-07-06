@@ -271,7 +271,7 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 |5||0|5|46|
 |6||6|6|6|
 |7||7|7|48|
-|8||0||33|
+|8||0|1|33|
 
 **p.s. For DSCP (Source), there should be a DSCP to TC map for them.**
 
