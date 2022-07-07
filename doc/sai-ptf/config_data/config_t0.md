@@ -20,7 +20,7 @@
   - [Port TC MAP](#port-tc-map)
   - [Tunnel TC MAP](#tunnel-tc-map)
   - [PCBB DSCP Config](#pcbb-dscp-config)
-  - [PCBB IP_in_IP Tunnel](#pcbb-ip_in_ip-tunnel)
+  - [PCBB IP_in_IP Tunnel Config](#pcbb-ip_in_ip-tunnel-config)
 # Overriew
 This document describes the sample configuration data.
 
@@ -298,9 +298,9 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 |Port1-8|PORT|DSCP_TO_TC_MAP; TC_TO_QUEUE; TC_TO_PRIORITY_GROUP|
 |Tunnel_IP_IP|TUNNEL|DSCP_TO_TC_MAP; TC_TO_PRIORITY_GROUP_MAP; TC_TO_QUEUE_MAP; TC_TO_DSCP_MAP(TC_AND_COLOR_TO_DSCP_MAP)|
 
-**For port map, please refer the table [Port TC MAP ], for tunnel map, please refer the table [Tunnel TC MAP].**
+**For port map, please refer the table [Port TC MAP], for tunnel map, please refer the table [Tunnel TC MAP].**
 
-## PCBB IP_in_IP Tunnel
-|Tunnel|ECN|DSCP|
+## PCBB IP_in_IP Tunnel Config
+|Tunnel|ECN MODE|DSCP MODE|
 |-|-|-|
 |IP_IN_IP|SAI_TUNNEL_ATTR_DECAP_ECN_MODE=SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER; SAI_TUNNEL_ATTR_ENCAP_ECN_MODE=SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD|SAI_TUNNEL_ATTR_DECAP_DSCP_MODE=SAI_TUNNEL_DSCP_MODE_PIPE_MODEL; SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE=SAI_TUNNEL_DSCP_MODE_PIPE_MODEL;|
