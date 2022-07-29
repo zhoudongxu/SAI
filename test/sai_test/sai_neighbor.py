@@ -244,8 +244,8 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
                 dst_mac_address=self.mac_addr)              
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
-        net_route = sai_thrift_route_entry_t(vr_id=self.default_vrf, destination=sai_ipprefix(self.ipv4_addr+'/32'))
-        sai_thrift_create_route_entry(self.client, net_route, next_hop_id=self.lag1_rif)       
+        self.net_route = sai_thrift_route_entry_t(vr_id=self.default_vrf, destination=sai_ipprefix(self.ipv4_addr+'/32'))
+        sai_thrift_create_route_entry(self.client, self.net_route, next_hop_id=self.lag1_rif)       
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
     
@@ -294,6 +294,7 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
             pass
     
     def tearDown(self):
+        sai_thrift_remove_route_entry(self.client, self.net_route)
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
         super().tearDown()
 
@@ -322,8 +323,8 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
                 dst_mac_address=self.mac_addr)              
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
-        net_route = sai_thrift_route_entry_t(vr_id=self.default_vrf, destination=sai_ipprefix(self.ipv6_addr+'/128'))
-        sai_thrift_create_route_entry(self.client, net_route, next_hop_id=self.lag1_rif)       
+        self.net_route = sai_thrift_route_entry_t(vr_id=self.default_vrf, destination=sai_ipprefix(self.ipv6_addr+'/128'))
+        sai_thrift_create_route_entry(self.client, self.net_route, next_hop_id=self.lag1_rif)       
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
     
@@ -371,6 +372,7 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
             pass
     
     def tearDown(self):
+        sai_thrift_remove_route_entry(self.client, self.net_route)
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v6)
         super().tearDown()
 
