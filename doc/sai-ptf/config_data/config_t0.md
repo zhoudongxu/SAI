@@ -309,13 +309,15 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
 |IP_IN_IP|SAI_TUNNEL_ATTR_DECAP_ECN_MODE=SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER; SAI_TUNNEL_ATTR_ENCAP_ECN_MODE=SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD|SAI_TUNNEL_ATTR_DECAP_DSCP_MODE=SAI_TUNNEL_DSCP_MODE_PIPE_MODEL; SAI_TUNNEL_ATTR_ENCAP_DSCP_MODE=SAI_TUNNEL_DSCP_MODE_PIPE_MODEL;|
 
 # 6. Buffer
-**For the buffer configurations, they are different from different platform, please get the data from the config_db.json**
+**For the buffer configurations, they are different from different platform, for testing purpose, use the specified config data.**
 
 The SAI objects need to config includes:
-- BUFFER_POOL: THRESHOLD_MODE, SIZE, TYPE
-- BUFFER_PROFILE: POOL, RESERVED_BUFFER_SIZE, THRESHOLD_MODE, SHARED_DYNAMIC_TH, XOFF_TH, XON_TH, XON_OFFSET_TH
+- BUFFER_POOL: THRESHOLD_MODE (dynamic: depends on amount of service pool still available, static: base on the preprogrammed number), SIZE(1000X1400), TYPE(INGRESS/EGRESS)
+- BUFFER_PROFILE: POOL, RESERVED_BUFFER_SIZE(1400), THRESHOLD_MODE, SHARED_DYNAMIC_TH, SHARED_STATIC_TH, XOFF_TH, XON_TH, XON_OFFSET_TH
 - QUEUE(BUFFER_QUEUE)
 - INGRESS_PRIORITY_GROUP(BUFFER_PG)
+
+
 
 # 7. QoS
 ## Lossless Queue and Priority
