@@ -34,6 +34,8 @@ VLAN ports: INGRESS
 
 **For each multicast traffic, in ingress pool, it should use the space same as the unicast, in egress, they should used space in corresponding queue buffer(queue has multicast and unicast buffer respectively)**
 
+**??Both lossless and lossy mode, when congestion happening, buffer will be used, just the pause frame will send ot not**
+
 **??How to test xoff to xon**
 
 **??Why pool size is around 16 times of xoff size, class of services
@@ -42,6 +44,8 @@ VLAN ports: INGRESS
 **??what is shared_dyname_th, looks like a bit mask?**
 
 **??Cannot get counter...**
+
+
 
 
 # Test Group1: Buffer 
