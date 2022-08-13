@@ -4,10 +4,14 @@
 ## common_config (will be moved to t0 config file)
 
 - pool 
-buffer size : 1000 X 1100
-xoff size: 900 X 1100
+
+use the actual packets amount to verify if buffer size satisify requirement (test need fault tolarent)
+
+buffer size : 1000 X 1100 (variable, can be adjuest one different test context)
+xoff size: 900 X 1100 （also variable, can be adjust）
 
 - buffer
+
 reserved buffer size : 1100
 
 xoff_th: 100 X 1100 (related to xoff_size for if shared, when shared this should not be exceed, shared it can use the pool size)
@@ -16,12 +20,12 @@ xon th : 10 X 1100
 
 xon offset th : 10 X 1100 
 
-shared_dyname_th: refer currernt device config (bits?)
+shared_dyname_th: refer currernt device config (bits?) (baiwei)
 
 shared_static_th: 900 X 1100 (dropped exceed?)
 
  
-QoS MAPs: same number mapped in DSCP, TC, PG, Queue (1~8)
+QoS MAPs: same number mapped in DSCP, TC, PG, Queue (1~8), dscp (dscp can be covered with more values 64 values.)
 
 VLAN ports: INGRESS 
 
@@ -29,7 +33,7 @@ VLAN ports: INGRESS
 
 **uc: unicast**
 
-**mc: multicast**
+**mc: multicast** queues(multicast buffer, need to check with bing or neetha)
 
 **For multicast traffic, a single cell can occupy multiple CQEs(cell queue entries, CQEs are control pointers and are used to store the control information for each cell of packet.)**
 
@@ -45,6 +49,12 @@ VLAN ports: INGRESS
 **??what is shared_dyname_th, looks like a bit mask?**
 
 **??Cannot get counter...**
+
+**More focus on behivor but not the accurate data.**
+
+**++Watermark clear, functionality.**
+
+**Flex counter, counters. junhua and neetha, and prince for who is owner.**
 
 
 
@@ -95,7 +105,7 @@ VLAN ports: INGRESS
 - test_change_ingress_buffer_profile - verify if change the buffer profile will not break the ingress traffic
 - test_SAI_PORT_ATTR_QOS_MAXIMUM_HEADROOM_SIZE - verify The sum of the headroom size of the ingress priority groups belonging to this port should not exceed the SAI_PORT_ATTR_QOS_MAXIMUM_HEADROOM_SIZE value. This attribute is applicable only for per-port, per-PG headroom model (which means SAI_BUFFER_POOL_ATTR_XOFF_SIZE is zero). For the platforms which don't have this limitation, 0 should be returned.
 - test_exceed_QOS_MAXIMUM_HEADROOM_SIZE
-- test_ingress_static_shared - verify if the packet will be dropped when the used space larger than static th
+- test_ingress_static_shared - verify if the packet will be dropped when the used space larger than static th (continue to use the headroom, verfiy status, pfc at first, then drop, ask baiwei about the behaivor)
 
 
 ### Case Steps <!-- omit in toc --> 
@@ -278,7 +288,7 @@ test_ingress_pg_stats_non_shared
 - test_egress_flow_control_drop - Verify if lossless port not drop packet on egress port
 - test_change_egress_buffer_profile - verify if change the buffer profile will not break the egress traffic
 - test_egress_static_shared - verify if the packet will be dropped when the used space larger than static th
-- test_cpu_queue_qos_map - Verify if the queue buffer and profile configuration can be applied on CPU queues
+- test_cpu_queue_qos_map - Verify if the queue buffer and profile configuration can be applied on CPU queues (need to confirm with guohan, CPU pool can be configured by SAI?)
 
 
 ### Case Steps <!-- omit in toc --> 
