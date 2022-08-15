@@ -3,31 +3,51 @@
 #  QoS Test plan (**DRAFT**)
 ## common_config (will be moved to t0 config file)
 
+In QoS Testing, we use those parameters, for differernt cases the value might be different, they parameters are
+
+### Buffer and packet parameters
+
+- Test packet
+
+PKT_LEN: packet length
+
+PKT_NUM: packets numbers
+
+DEVI: deviation ratio, the accept different ratio between actual value and expected value
+
 - pool 
 
 use the actual packets amount to verify if buffer size satisify requirement (test need fault tolarent)
 
-buffer size : 1000 X 1100 (variable, can be adjuest one different test context)
-xoff size: 900 X 1100 （also variable, can be adjust）
+buffer_size : PKT_NUM X (PKT_LEN X 1.1) (variable, can be adjuest one different test context)
+
+xoff_size: buffer_size X 0.9 （also variable, can be adjust）
 
 - buffer
 
-reserved buffer size : 1100
+reserved_buffer_size : PKT_LEN X 1.1
 
-xoff_th: 100 X 1100 (related to xoff_size for if shared, when shared this should not be exceed, shared it can use the pool size)
+xoff_th: xoff_size / 16 (related to xoff_size for if shared, when shared this should not be exceed, shared it can use the pool size)
 
-xon th : 10 X 1100
+xon_th : 10 X PKT_LEN (xon xoff signal between xon_th and xon_offset_th)
 
-xon offset th : 10 X 1100 
+xon_offset_th : 10 X PKT_LEN 
 
 shared_dyname_th: refer currernt device config (bits?) (baiwei)
 
-shared_static_th: 900 X 1100 (dropped exceed?)
+shared_static_th: buffer_size X 0.9 (dropped exceed?)
 
+### QoS Maps
  
-QoS MAPs: same number mapped in DSCP, TC, PG, Queue (1~8), dscp (dscp can be covered with more values 64 values.)
+QoS MAPs: 
+- dscp: mapped in DSCP in 8 section (1:0-7, 2:8-15, 3:16-23, 4:24-31, 5:32-39, 6:40-47, 7:48-55, 8:56-63), map each section to each of the value in tc, pg and queue
+- tc, PG, queue, same number amoung TC, PG, Queue (1~8)
 
-VLAN ports: INGRESS 
+### Port
+
+VLAN ports: INGRESS
+
+LAG: EGRESS
 
 **p.s. SAI_QOS_MAP_TYPE_PFC_PRIORITY_TO_PRIORITY_GROUP is not supported by brcm**
 
