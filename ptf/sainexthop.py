@@ -23,7 +23,7 @@ from ptf.testutils import *
 from ptf.thriftutils import *
 
 from sai_base_test import *
-
+import pdb
 
 @group("draft")
 class L3NexthopTest(SaiHelper):
@@ -39,15 +39,17 @@ class L3NexthopTest(SaiHelper):
             Test verifies correct nexthop removal.
         '''
         print("RemoveNexthopTest")
-        nhop = sai_thrift_create_next_hop(self.client,
-                                          ip=sai_ipaddress('10.10.10.10'),
-                                          router_interface_id=self.port10_rif,
-                                          type=SAI_NEXT_HOP_TYPE_IP)
+        pdb.set_trace()
         neighbor_entry = sai_thrift_neighbor_entry_t(
             rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.10'))
         sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
                                          dst_mac_address='00:99:99:99:99:99')
-
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        nhop = sai_thrift_create_next_hop(self.client,
+                                          ip=sai_ipaddress('10.10.10.10'),
+                                          router_interface_id=self.port10_rif,
+                                          type=SAI_NEXT_HOP_TYPE_IP)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         route1 = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.2/32'))
         sai_thrift_create_route_entry(self.client, route1, next_hop_id=nhop)
