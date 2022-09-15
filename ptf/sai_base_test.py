@@ -593,8 +593,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         aging_interval_buffer = 10
         time.sleep(timeout + aging_interval_buffer)
 
-
-class SaiHelper(SaiHelperBase):
+from sai_test_base import T0TestBase
+class SaiHelper(T0TestBase):
     """
     Set common base ports configuration for tests
 
@@ -651,8 +651,7 @@ Common ports configuration:
     """
 
     def setUp(self):
-        super(SaiHelper, self).setUp()
-
+        T0TestBase.setUp(self, is_create_vlan=False, is_create_fdb=False, is_recreate_bridge=False, is_create_lag=False, is_create_route_for_lag=False)
         # lists of default objects
         self.def_bridge_port_list = []
         self.def_lag_list = []
@@ -946,7 +945,6 @@ Common ports configuration:
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         self.def_rif_list.append(self.port13_rif)
 
-        self.create_default_v4_v6_route_entry()
 
     def create_default_v4_v6_route_entry(self):
         """

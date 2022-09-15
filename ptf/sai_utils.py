@@ -1,24 +1,32 @@
-# Copyright 2021-present Intel Corporation.
+# Copyright (c) 2021 Microsoft Open Technologies, Inc.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+#    Licensed under the Apache License, Version 2.0 (the "License"); you may
+#    not use this file except in compliance with the License. You may obtain
+#    a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 #
-#    http://www.apache.org/licenses/LICENSE-2.0
+#    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR
+#    CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT
+#    LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS OF TITLE, FITNESS
+#    FOR A PARTICULAR PURPOSE, MERCHANTABILITY OR NON-INFRINGEMENT.
 #
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+#    See the Apache Version 2.0 License for specific language governing
+#    permissions and limitations under the License.
+#
+#    Microsoft would like to thank the following companies for their review and
+#    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
+#    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
+#
+#
 
 """
 Thrift SAI interface basic utils.
 """
 
+import os
 import time
 import struct
 import socket
+import json
 
 from functools import wraps
 
@@ -26,156 +34,7 @@ from ptf.packet import *
 from ptf.testutils import *
 
 from sai_thrift.sai_adapter import *
-
-
-def sai_thrift_query_attribute_enum_values_capability(client,
-                                                      obj_type,
-                                                      attr_id=None):
-    """
-    Call the sai_thrift_query_attribute_enum_values_capability() function
-    and return the list of supported aattr_is enum capabilities
-
-    Args:
-        client (Client): SAI RPC client
-        obj_type (enum): SAI object type
-        attr_id (attr): SAI attribute name
-
-    Returns:
-        list: list of switch object type enum capabilities
-    """
-    max_cap_no = 20
-
-    enum_cap_list = client.sai_thrift_query_attribute_enum_values_capability(
-        obj_type, attr_id, max_cap_no)
-
-    return enum_cap_list
-
-
-def sai_thrift_object_type_get_availability(client,
-                                            obj_type,
-                                            attr_id=None,
-                                            attr_type=None):
-    """
-    sai_thrift_object_type_get_availability() RPC client function
-    implementation
-
-    Args:
-        client (Client): SAI RPC client
-        obj_type (enum): SAI object type
-        attr_id (attr): SAI attribute name
-        attr_type (type): SAI attribute type
-
-    Returns:
-        uint: number of available resources with given parameters
-    """
-    availability_cnt = client.sai_thrift_object_type_get_availability(
-        obj_type, attr_id, attr_type)
-
-    return availability_cnt
-
-
-def sai_thrift_object_type_query(client,
-                                 obj_id=None):
-    """
-    sai_thrift_object_type_query() RPC client function
-    implementation
-
-    Args:
-        client (Client): SAI RPC client
-        obj_id (obj): SAI object id
-
-    Returns:
-        uint: object type
-    """
-    obj_type = client.sai_object_type_query(
-        obj_id)
-
-    return obj_type
-
-
-def sai_thrift_switch_id_query(client,
-                               obj_id=None):
-    """
-    sai_thrift_switch_id_query() RPC client function
-    implementation
-
-    Args:
-        client (Client): SAI RPC client
-        obj_id (obj): SAI object id
-
-    Returns:
-        uint: object type
-    """
-    switch_obj_id = client.sai_switch_id_query(
-        obj_id)
-
-    return switch_obj_id
-
-
-def sai_thrift_get_debug_counter_port_stats(client, port_oid, counter_ids):
-    """
-    Get port statistics for given debug counters
-
-    Args:
-        client (Client): SAI RPC client
-        port_oid (sai_thrift_object_id_t): object_id IN argument
-        counter_ids (sai_stat_id_t): list of requested counters
-
-    Returns:
-        Dict[str, sai_thrift_uint64_t]: stats
-    """
-
-    stats = {}
-    counters = client.sai_thrift_get_port_stats(port_oid, counter_ids)
-
-    for i, counter_id in enumerate(counter_ids):
-        stats[counter_id] = counters[i]
-
-    return stats
-
-
-def sai_thrift_get_debug_counter_switch_stats(client, counter_ids):
-    """
-    Get switch statistics for given debug counters
-
-    Args:
-        client (Client): SAI RPC client
-        counter_ids (sai_stat_id_t): list of requested counters
-
-    Returns:
-        Dict[str, sai_thrift_uint64_t]: stats
-    """
-
-    stats = {}
-    counters = client.sai_thrift_get_switch_stats(counter_ids)
-
-    for i, counter_id in enumerate(counter_ids):
-        stats[counter_id] = counters[i]
-
-    return stats
-
-
-def sai_ipaddress(addr_str):
-    """
-    Set SAI IP address, assign appropriate type and return
-    sai_thrift_ip_address_t object
-
-    Args:
-        addr_str (str): IP address string
-
-    Returns:
-        sai_thrift_ip_address_t: object containing IP address family and number
-    """
-
-    if '.' in addr_str:
-        family = SAI_IP_ADDR_FAMILY_IPV4
-        addr = sai_thrift_ip_addr_t(ip4=addr_str)
-    if ':' in addr_str:
-        family = SAI_IP_ADDR_FAMILY_IPV6
-        addr = sai_thrift_ip_addr_t(ip6=addr_str)
-    ip_addr = sai_thrift_ip_address_t(addr_family=family, addr=addr)
-
-    return ip_addr
+from constant import *
 
 
 def sai_ipprefix(prefix_str):
@@ -236,94 +95,86 @@ def num_to_dotted_quad(address, ipv4=True):
     return result[:-1]
 
 
-def open_packet_socket(hostif_name):
+class ConfigDBOpertion():
+    '''
+    read config from config_db.json
+    '''
+
+    def __init__(self):
+        path = os.path.join(os.path.dirname(__file__),
+                            "resources/config_db.json")  # REPLACE
+        self.config_json = None
+        with open(path, mode='r') as f:
+            self.config_json = json.load(f)
+
+    def get_port_config(self):
+        '''
+        RETURN:
+            dict: port config
+        '''
+        port_conf = self.config_json.get('PORT')
+        key_0 = list(port_conf.keys())[0]
+        return self.config_json.get('PORT').get(key_0)
+
+
+def sai_ipaddress(addr_str):
     """
-    Open a linux socket
+    Set SAI IP address, assign appropriate type and return
+    sai_thrift_ip_address_t object
 
     Args:
-        hostif_name (str): socket interface name
+        addr_str (str): IP address string
 
-    Return:
-        sock: socket ID
+    Returns:
+        sai_thrift_ip_address_t: object containing IP address family and number
     """
-    eth_p_all = 3
-    sock = socket.socket(socket.AF_PACKET, socket.SOCK_RAW,
-                         socket.htons(eth_p_all))
-    sock.bind((hostif_name, eth_p_all))
-    sock.setblocking(0)
 
-    return sock
+    if '.' in addr_str:
+        family = SAI_IP_ADDR_FAMILY_IPV4
+        addr = sai_thrift_ip_addr_t(ip4=addr_str)
+    if ':' in addr_str:
+        family = SAI_IP_ADDR_FAMILY_IPV6
+        addr = sai_thrift_ip_addr_t(ip6=addr_str)
+    ip_addr = sai_thrift_ip_address_t(addr_family=family, addr=addr)
+
+    return ip_addr
 
 
-def socket_verify_packet(pkt, sock, timeout=2):
+def generate_mac_address_list(role, group, indexes):
     """
-    Verify packet was received on a socket
+    Generate mac addresses.
 
     Args:
-        pkt (packet): packet to match with
-        sock (int): socket ID
-        timeout (int): timeout
+        role: Role which is represented by the mac address(base on test plan config)
+        group: group number for the mac address(base on test plan config)
+        indexes: mac indexes
 
-    Return:
-        bool: True if packet matched
+    Returns:
+        default_1q_bridge_id
     """
-    max_pkt_size = 9100
-    timeout = time.time() + timeout
-    match = False
-
-    if isinstance(pkt, ptf.mask.Mask):
-        if not pkt.is_valid():
-            return False
-
-    while time.time() < timeout:
-        try:
-            packet_from_tap_device = Ether(sock.recv(max_pkt_size))
-
-            if isinstance(pkt, ptf.mask.Mask):
-                match = pkt.pkt_match(packet_from_tap_device)
-            else:
-                match = (str(packet_from_tap_device) == str(pkt))
-
-            if match:
-                break
-
-        except BaseException:
-            pass
-
-    return match
+    print("Generate MAC ...")
+    mac_list = []
+    for index in indexes:
+        mac = FDB_MAC_PREFIX + ':' + role + ':' + \
+            '{:02d}'.format(group) + ':' + '{:02d}'.format(index)
+        mac_list.append(mac)
+    return mac_list
 
 
-def delay_wrapper(func, delay=2):
+def generate_ip_address_list(role, group, indexes):
     """
-    A wrapper extending given function by a delay
+    Generate ip addresses.
 
     Args:
-        func (function): function to be wrapped
-        delay (int): delay period in sec
+        role: Role which is represented by the ip address(base on test plan config)
+        group: group number for the ip address(base on test plan config)
+        indexes: ip indexes
 
-    Return:
-        wrapped_function: wrapped function
+    Returns:
+        default_1q_bridge_id
     """
-    @wraps(func)
-    def wrapped_function(*args, **kwargs):
-        """
-        A wrapper function adding a delay
-
-        Args:
-            args (tuple): function arguments
-            kwargs (dict): keyword function arguments
-
-        Return:
-            status: original function return value
-        """
-        test_params = test_params_get()
-        if test_params['target'] != "hw":
-            time.sleep(delay)
-
-        status = func(*args, **kwargs)
-        return status
-
-    return wrapped_function
-
-
-sai_thrift_flush_fdb_entries = delay_wrapper(sai_thrift_flush_fdb_entries)
+    print("Generate IP ...")
+    ip_list = []
+    for index in indexes:
+        ip_list.append(role.format(group, index))
+    return ip_list

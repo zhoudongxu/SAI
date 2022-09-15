@@ -75,15 +75,15 @@ class L3NexthopTest(SaiHelper):
                 ip_src='192.168.0.1',
                 ip_id=105,
                 ip_ttl=63)
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
+            print("Sending packet on port %d, forward" % self.dev_port21)
+            send_packet(self, self.dev_port21, pkt)
             verify_packet(self, exp_pkt, self.dev_port10)
 
             sai_thrift_remove_next_hop(self.client, nhop)
             pre_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue0)
-            print("Sending packet on port %d, forward" % self.dev_port11)
-            send_packet(self, self.dev_port11, pkt)
+            print("Sending packet on port %d, forward" % self.dev_port21)
+            send_packet(self, self.dev_port21, pkt)
             time.sleep(4)
             post_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue0)

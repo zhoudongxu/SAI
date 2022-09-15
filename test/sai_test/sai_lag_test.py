@@ -60,6 +60,8 @@ class LagConfigTest(T0TestBase):
                                      ip_src=self.servers[2][1].ipv4,
                                      ip_id=105,
                                      ip_ttl=63)
+        import pdb    
+        pdb.set_trace()                        
         send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt1)
         verify_packet_any_port(
             self, exp_pkt1, self.recv_dev_port_idxs)
