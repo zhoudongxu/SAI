@@ -889,6 +889,89 @@ class RemoveLagEcmpTestV4(T0TestBase):
             nhp_grp_obj=self.dut.nhp_grpv4_list[0], lag_idx=3)
         super().tearDown()
 
+class RemoveNexthopGroupMemeberTestV4(T0TestBase):
+    """
+    When remove all of nexthop group members, we expect traffic drop.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+        
+    def test_nexthopgroupmemeber_remove(self):
+        """
+        1. Remove all next hops from next-hop group in test_ecmp
+        2. Generate Packets
+        3. Verify no packets  can be received on LAG1, LAG2 and LAG3
+        """
+        print("Ecmp remove nexthop group test")
+
+        for nhp_member in self.dut.nhp_grpv4_list[0].nhp_grp_members:
+            sai_thrift_remove_next_hop_group_member(self.client, nhp_member)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+        ip_src = self.servers[0][1].ipv4
+        ip_dst = self.servers[60][1].ipv4
+        src_port = 1000 
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    tcp_sport= src_port,
+                                    ip_id=105,
+                                    ip_ttl=64)
+
+        exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[2][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        exp_pkt3 = simple_tcp_packet(eth_dst=self.t1_list[3][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        exp_pkt4 = simple_tcp_packet(eth_dst=self.t1_list[4][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+        verify_no_other_packets(self)
+
+            
+
+    def runTest(self):
+        self.test_nexthopgroupmemeber_remove()
+
+    def tearDown(self):
+        super().tearDown()
+
+
 class RemoveNexthopGroupTestV4(T0TestBase):
     """
     When remove nexthop group, we expect traffic drop.
